@@ -153,6 +153,14 @@ export interface DemoState {
   challengeProgress: Record<string, ChallengeProgress>;
   earnedBadges: UserBadge[];
   dailyActivity: DailyActivity[];
+  /** Lessons written in the Studio. Optional so demo state saved before the Studio existed still loads. */
+  authored?: AuthoredLesson[];
+}
+
+/** A lesson written in the Studio, always as a scenario. */
+export interface AuthoredLesson {
+  lesson: Lesson;
+  scenario: Scenario;
 }
 
 // --- Admin ---

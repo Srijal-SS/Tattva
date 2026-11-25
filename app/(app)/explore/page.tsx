@@ -6,9 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, ChevronRight } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
-import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
-import { scenarios } from "@/lib/data/seed-scenarios";
 import { ThemeIcon } from "@/components/ui/theme-icon";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +14,7 @@ function ExploreContent() {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { isLessonCompleted } = useDemo();
+  const { isLessonCompleted, lessons, scenarios } = useDemo();
   const reduce = useReducedMotion();
 
   // The URL is the single source of truth for the filter, so links like ?category=values work and stay in sync.

@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Check, MessageCircle, Printer } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
 import { categories } from "@/lib/data/seed-categories";
-import { lessons } from "@/lib/data/seed-lessons";
-import { scenarios } from "@/lib/data/seed-scenarios";
 import { ThemeIcon } from "@/components/ui/theme-icon";
 import { ShareButton } from "@/components/ui/share-button";
 
@@ -14,7 +12,7 @@ const question = (title: string, reflection?: string) =>
   reflection ?? `What would you do differently after “${title}”?`;
 
 export default function ParentsPage() {
-  const { state, isLessonCompleted, isChallengeCompleted, getCompletedLessonCount, getCompletedChallengeCount, getStreak } = useDemo();
+  const { state, isLessonCompleted, isChallengeCompleted, getCompletedLessonCount, getCompletedChallengeCount, getStreak, lessons, scenarios } = useDemo();
   const profile = state.profile;
   const published = lessons.filter((l) => l.published);
   const finished = published.filter((l) => isLessonCompleted(l.id));

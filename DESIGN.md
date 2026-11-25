@@ -88,6 +88,8 @@ Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a
 - Focus: when a multi-step flow changes step, focus moves to the new step's container (tabIndex -1) and an sr-only live line says "Step n of 5".
 - Repeated buttons (Share on each card) carry an aria-label naming what they act on.
 
+- Studio (Operate mode): plain sticky header with Lessons / Write a lesson; numbered form sections on surface panels; a sticky "Before it goes live" checklist beside the form (stacks below on phones). Publish is the one primary button and stays disabled until every check passes.
+
 ## Rules learned
 - Global h1–h3 display font lives in `@layer base` so `font-sans` on a heading still wins.
 - Text on an SVG circle: set `textLength` to the circumference so the phrase meets itself.

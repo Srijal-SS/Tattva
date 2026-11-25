@@ -4,9 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Flame, MapPin } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
-import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
-import { scenarios } from "@/lib/data/seed-scenarios";
 import { Avatar } from "@/components/ui/avatar";
 import { ThemeIcon } from "@/components/ui/theme-icon";
 
@@ -19,7 +17,7 @@ function greeting() {
 
 export default function LearnPage() {
   const reduce = useReducedMotion();
-  const { state, isLessonCompleted, getStreak } = useDemo();
+  const { state, isLessonCompleted, getStreak, lessons, scenarios } = useDemo();
   const profile = state.profile;
   const published = lessons.filter((l) => l.published);
 

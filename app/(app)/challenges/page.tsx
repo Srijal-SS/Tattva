@@ -4,14 +4,13 @@ import Link from "next/link";
 import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
-import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
 import { sounds } from "@/lib/audio";
 import { ChallengeTicket } from "@/components/lesson/lesson-complete";
 import { ThemeIcon } from "@/components/ui/theme-icon";
 
 export default function ChallengesPage() {
-  const { completeChallenge, isChallengeCompleted, isLessonCompleted } = useDemo();
+  const { completeChallenge, isChallengeCompleted, isLessonCompleted, lessons } = useDemo();
   const reduce = useReducedMotion();
   // A ticket marked done travels from "Ready to try" down into "Done" (shared layoutId).
   const move = reduce ? { duration: 0 } : { type: "spring" as const, stiffness: 260, damping: 30 };

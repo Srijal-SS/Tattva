@@ -18,7 +18,7 @@ Child = user. Parent = (hypothesised) paying customer. We teach *how to reason*,
 ## Layout
 - `app/page.tsx` landing · `app/login`, `app/signup`, `app/onboarding`
 - `app/(app)/` signed-in shell: `learn`, `explore`, `lesson/[id]`, `challenges`, `progress`, `profile`, `parents`
-- `app/admin/` content authoring
+- `app/admin/` Studio: lesson list; `app/admin/write` scenario editor (rules in `lib/studio.ts`)
 - `lib/data/seed-*.ts` seed content · `types/index.ts` all shared types · `lib/audio.ts` UI sounds · `lib/utils.ts` `cn`, ids, slugs
 
 ## Commands
@@ -39,3 +39,4 @@ npm run lint
 - Respect `prefers-reduced-motion` and keyboard access on every interactive piece.
 - Don't add a dependency for something a few lines can do; check SKILLS.md before adding a library.
 - Keep demo mode working. Supabase comes later behind the same context API.
+- Read lessons and scenarios from `useDemo()` (seed + Studio-written), not straight from `lib/data/seed-*`. Only the landing page uses the seed files directly.

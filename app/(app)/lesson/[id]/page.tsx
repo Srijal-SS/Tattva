@@ -15,9 +15,7 @@ import {
 } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
 import { sounds } from "@/lib/audio";
-import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
-import { scenarios } from "@/lib/data/seed-scenarios";
 import { ScenarioPlayer } from "@/components/lesson/scenario-player";
 import { LessonComplete } from "@/components/lesson/lesson-complete";
 import { ThemeIcon } from "@/components/ui/theme-icon";
@@ -31,7 +29,15 @@ type LessonPhase = "scenario" | "learn" | "question" | "feedback" | "complete" |
 // ============================================================
 // Component
 // ============================================================
+// Wait for saved state before mounting the lesson, so a Studio-written lesson starts in its scenario phase.
 export default function LessonPage() {
+  const { ready } = useDemo();
+  const params = useParams();
+  if (!ready) return <div className="mx-auto max-w-2xl px-4 py-20 text-text-secondary">Opening the lesson…</div>;
+  return <LessonView key={params.id as string} />;
+}
+
+function LessonView() {
   const params = useParams();
   const router = useRouter();
   const lessonId = params.id as string;
@@ -44,11 +50,13 @@ export default function LessonPage() {
     checkAndAwardBadges,
     getLessonProgress,
     state,
+    lessons,
+    scenarios,
   } = useDemo();
 
   const lesson = useMemo(
     () => lessons.find((l) => l.id === lessonId),
-    [lessonId]
+    [lessonId, lessons]
   );
   const category = useMemo(
     () => (lesson ? categories.find((c) => c.id === lesson.categoryId) : null),
@@ -63,7 +71,7 @@ export default function LessonPage() {
     const i = lessons.findIndex((l) => l.id === lessonId);
     const order = [...lessons.slice(i + 1), ...lessons.slice(0, i)];
     return order.find((l) => l.published && !isLessonCompleted(l.id));
-  }, [lessonId, isLessonCompleted]);
+  }, [lessonId, isLessonCompleted, lessons]);
 
   const scenario = scenarios[lessonId];
   const startPhase: LessonPhase = scenario ? "scenario" : "learn";
@@ -342,7 +350,7 @@ export default function LessonPage() {
       {phase === "scenario" && scenario && (
         <ScenarioPlayer
           scenario={scenario}
-          fullNote={formatContent(lesson.content)}
+          fullNote={lesson.content.trim() ? formatContent(lesson.content) : null}
           onFinish={(wrote) => {
             // Reflection bonus; also feeds the "+N points" shown on the completion screen.
             const bonus = wrote ? POINTS.CORRECT_ANSWER : 0;

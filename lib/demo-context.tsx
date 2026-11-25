@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   DemoState,
   UserProfile,
@@ -8,8 +8,12 @@ import {
   ChallengeProgress,
   UserBadge,
   POINTS,
+  AuthoredLesson,
+  Lesson,
+  Scenario,
 } from "@/types";
-import { lessons } from "@/lib/data/seed-lessons";
+import { lessons as seedLessons } from "@/lib/data/seed-lessons";
+import { scenarios as seedScenarios } from "@/lib/data/seed-scenarios";
 import { badges } from "@/lib/data/seed-badges";
 import { categories } from "@/lib/data/seed-categories";
 
@@ -112,6 +116,7 @@ const STORAGE_KEY = "tattva-demo-state-v2";
 
 interface DemoContextType {
   isDemo: boolean;
+  ready: boolean;
   state: DemoState;
 
   // Profile
@@ -142,8 +147,13 @@ interface DemoContextType {
     percentage: number;
   };
 
-  // Data
-  lessons: typeof lessons;
+  // Data: built-in lessons plus the ones written in the Studio
+  lessons: Lesson[];
+  scenarios: Record<string, Scenario>;
+
+  // Studio
+  saveAuthored: (item: AuthoredLesson) => void;
+  deleteAuthored: (lessonId: string) => void;
   categories: typeof categories;
   badges: typeof badges;
 
@@ -164,7 +174,29 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     challengeProgress: DEFAULT_CHALLENGE_PROGRESS,
     earnedBadges: DEFAULT_BADGES,
     dailyActivity: [],
+    authored: [],
   });
+
+  // True once saved state has been read; until then Studio-written lessons don't exist yet.
+  const [ready, setReady] = useState(false);
+
+  const lessons = useMemo(() => [...seedLessons, ...(state.authored ?? []).map((a) => a.lesson)], [state.authored]);
+  const scenarios = useMemo(
+    () => ({ ...seedScenarios, ...Object.fromEntries((state.authored ?? []).map((a) => [a.lesson.id, a.scenario])) }),
+    [state.authored]
+  );
+
+  const saveAuthored = useCallback((item: AuthoredLesson) => {
+    setState((prev) => {
+      const list = prev.authored ?? [];
+      const exists = list.some((a) => a.lesson.id === item.lesson.id);
+      return { ...prev, authored: exists ? list.map((a) => (a.lesson.id === item.lesson.id ? item : a)) : [...list, item] };
+    });
+  }, []);
+
+  const deleteAuthored = useCallback((lessonId: string) => {
+    setState((prev) => ({ ...prev, authored: (prev.authored ?? []).filter((a) => a.lesson.id !== lessonId) }));
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -179,6 +211,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Use defaults
     }
+    setReady(true);
   }, []);
 
   // Save to localStorage on change. Skip the first run: it holds the defaults, and
@@ -207,7 +240,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => {
       if (prev.lessonProgress[lessonId]?.completed) return prev;
 
-      const lesson = lessons.find((l) => l.id === lessonId);
+      const lesson = [...seedLessons, ...(prev.authored ?? []).map((a) => a.lesson)].find((l) => l.id === lessonId);
       const pointsEarned = (lesson?.points ?? POINTS.LESSON_COMPLETE) + score;
 
       return {
@@ -323,7 +356,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       }
     }
     return null;
-  }, [state.lessonProgress, state.earnedBadges, earnBadge]);
+  }, [state.lessonProgress, state.earnedBadges, earnBadge, lessons]);
 
   const getCompletedLessonCount = useCallback(
     () => Object.values(state.lessonProgress).filter((p) => p.completed).length,
@@ -372,24 +405,27 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         percentage: total > 0 ? Math.round((completedCount / total) * 100) : 0,
       };
     },
-    [state.lessonProgress]
+    [state.lessonProgress, lessons]
   );
 
+  // Starting over clears the child's progress, not the lessons written in the Studio.
   const resetDemo = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
-    setState({
+    setState((prev) => ({
       profile: DEFAULT_PROFILE,
       lessonProgress: DEFAULT_PROGRESS,
       challengeProgress: DEFAULT_CHALLENGE_PROGRESS,
       earnedBadges: DEFAULT_BADGES,
       dailyActivity: [],
-    });
+      authored: prev.authored,
+    }));
   }, []);
 
   return (
     <DemoContext.Provider
       value={{
         isDemo: true,
+        ready,
         state,
         updateProfile,
         completeLesson,
@@ -405,6 +441,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         getStreak,
         getCategoryProgress,
         lessons,
+        scenarios,
+        saveAuthored,
+        deleteAuthored,
         categories,
         badges,
         resetDemo,

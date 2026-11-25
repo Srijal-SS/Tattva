@@ -13,7 +13,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 interface Props {
   scenario: Scenario;
   /** The lesson's long-form note, shown on demand under the big idea. */
-  fullNote: ReactNode;
+  fullNote: ReactNode | null;
   onFinish: (wroteReflection: boolean) => void;
 }
 
@@ -368,6 +368,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
                 ))}
               </p>
             )}
+            {fullNote && (
             <button
               type="button"
               onClick={() => setShowNote((v) => !v)}
@@ -377,6 +378,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
               {showNote ? "Hide the full note" : "Read the full note"}
               <ChevronDown className={cn("h-4 w-4 transition-transform", showNote && "rotate-180")} aria-hidden />
             </button>
+            )}
             {showNote && <div className="mt-4 border-t border-border-light pt-4">{fullNote}</div>}
             <NextButton onClick={() => go(4)}>Your turn</NextButton>
           </motion.div>
