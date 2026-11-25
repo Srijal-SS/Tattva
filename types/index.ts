@@ -155,6 +155,17 @@ export interface DemoState {
   dailyActivity: DailyActivity[];
   /** Lessons written in the Studio. Optional so demo state saved before the Studio existed still loads. */
   authored?: AuthoredLesson[];
+  /** Local usage log for Studio Insights. Never holds reflection text, only whether one was written. */
+  events?: AnalyticsEvent[];
+}
+
+export type AnalyticsEventType = "visit" | "lesson_start" | "choice" | "lesson_finish" | "reflection" | "challenge_done";
+
+export interface AnalyticsEvent {
+  type: AnalyticsEventType;
+  at: string;
+  lessonId?: string;
+  choiceId?: string;
 }
 
 /** A lesson written in the Studio, always as a scenario. */

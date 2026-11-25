@@ -52,6 +52,7 @@ function LessonView() {
     state,
     lessons,
     scenarios,
+    track,
   } = useDemo();
 
   const lesson = useMemo(
@@ -189,6 +190,7 @@ function LessonView() {
 
   const handleLessonComplete = (score: number) => {
     sounds.playCelebration();
+    track("lesson_finish", { lessonId });
     if (!alreadyCompleted) {
       completeLesson(lessonId, score);
       setJustFinished(true);
@@ -354,6 +356,7 @@ function LessonView() {
           onFinish={(wrote) => {
             // Reflection bonus; also feeds the "+N points" shown on the completion screen.
             const bonus = wrote ? POINTS.CORRECT_ANSWER : 0;
+            if (wrote) track("reflection", { lessonId });
             setTotalScore(bonus);
             handleLessonComplete(bonus);
           }}

@@ -6,6 +6,7 @@ import { ArrowRight, ChevronDown, Lock, MapPin, Volume2, VolumeX } from "lucide-
 import { sounds } from "@/lib/audio";
 import { cn } from "@/lib/utils";
 import type { Scenario } from "@/types";
+import { useDemo } from "@/lib/demo-context";
 
 const STEPS = ["The situation", "What happened", "Other views", "The big idea", "Your turn"] as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -39,6 +40,15 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
 
   useEffect(() => () => stopSpeaking(), []);
 
+  // Log that the lesson was opened, once per mount (the ref guards Strict Mode's double effect).
+  const { track } = useDemo();
+  const started = useRef(false);
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    track("lesson_start", { lessonId: scenario.lessonId });
+  }, [track, scenario.lessonId]);
+
   // After a step change, move focus to the new step so keyboard and screen-reader users keep their place.
   const panelRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
@@ -67,6 +77,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
     if (picked) return;
     sounds.playClick();
     setPicked(id);
+    track("choice", { lessonId: scenario.lessonId, choiceId: id });
     setChoiceId(id);
     setShowOthers(false);
     setTimeout(() => {

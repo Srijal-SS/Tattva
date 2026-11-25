@@ -9,6 +9,8 @@ import {
   UserBadge,
   POINTS,
   AuthoredLesson,
+  AnalyticsEvent,
+  AnalyticsEventType,
   Lesson,
   Scenario,
 } from "@/types";
@@ -107,6 +109,36 @@ const DEFAULT_BADGES: UserBadge[] = [
   },
 ];
 
+// The seeded demo history, as events, so Insights has the same story as Progress.
+// Also used to backfill state saved before events existed.
+function eventsFromProgress(lp: Record<string, LessonProgress>, cp: Record<string, ChallengeProgress>): AnalyticsEvent[] {
+  const done = <T extends { completed: boolean; completedAt: string | null }>(p: T) => p.completed && !!p.completedAt;
+  const lessonEvents = Object.values(lp).filter(done).flatMap((p) => [
+    { type: "visit" as const, at: p.completedAt! },
+    { type: "lesson_start" as const, at: p.completedAt!, lessonId: p.lessonId },
+    { type: "lesson_finish" as const, at: p.completedAt!, lessonId: p.lessonId },
+  ]);
+  const challengeEvents = Object.values(cp).filter(done).map((p) => ({ type: "challenge_done" as const, at: p.completedAt!, lessonId: p.lessonId }));
+  return [...lessonEvents, ...challengeEvents].sort((a, b) => a.at.localeCompare(b.at));
+}
+const DEFAULT_EVENTS: AnalyticsEvent[] = eventsFromProgress(DEFAULT_PROGRESS, DEFAULT_CHALLENGE_PROGRESS);
+// Adds derived events for progress the log doesn't cover yet (state saved before events existed).
+function backfill(st: DemoState): AnalyticsEvent[] {
+  const log = st.events ?? [];
+  const has = (type: string, id?: string) => log.some((e) => e.type === type && e.lessonId === id);
+  const missing = eventsFromProgress(st.lessonProgress, st.challengeProgress).filter((e) =>
+    e.type === "challenge_done" ? !has("challenge_done", e.lessonId) : e.type === "visit" ? false : !has("lesson_finish", e.lessonId)
+  );
+  const visits = missing.filter((e) => e.type === "lesson_finish").map((e) => ({ type: "visit" as const, at: e.at }));
+  return [...log, ...missing, ...visits].sort((a, b) => a.at.localeCompare(b.at));
+}
+const MAX_EVENTS = 2000;
+const withEvent = (prev: DemoState, e: Omit<AnalyticsEvent, "at">): DemoState => ({
+  ...prev,
+  events: [...(prev.events ?? []), { ...e, at: new Date().toISOString() }].slice(-MAX_EVENTS),
+});
+const isToday = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
+
 // v2: categories were remapped to the four themes; older saved demo state is ignored.
 const STORAGE_KEY = "tattva-demo-state-v2";
 
@@ -151,6 +183,10 @@ interface DemoContextType {
   lessons: Lesson[];
   scenarios: Record<string, Scenario>;
 
+  // Insights: log a usage event (no personal text)
+  track: (type: AnalyticsEventType, data?: { lessonId?: string; choiceId?: string }) => void;
+  clearEvents: () => void;
+
   // Studio
   saveAuthored: (item: AuthoredLesson) => void;
   deleteAuthored: (lessonId: string) => void;
@@ -175,6 +211,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     earnedBadges: DEFAULT_BADGES,
     dailyActivity: [],
     authored: [],
+    events: DEFAULT_EVENTS,
   });
 
   // True once saved state has been read; until then Studio-written lessons don't exist yet.
@@ -194,6 +231,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const track = useCallback((type: AnalyticsEventType, data?: { lessonId?: string; choiceId?: string }) => {
+    setState((prev) => withEvent(prev, { type, ...data }));
+  }, []);
+
+  const clearEvents = useCallback(() => setState((prev) => ({ ...prev, events: [] })), []);
+
   const deleteAuthored = useCallback((lessonId: string) => {
     setState((prev) => ({ ...prev, authored: (prev.authored ?? []).filter((a) => a.lesson.id !== lessonId) }));
   }, []);
@@ -206,11 +249,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(saved) as DemoState;
         // Hydrating from localStorage after mount is the one sanctioned use: the server render can't see storage.
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setState(parsed);
+        setState({ ...parsed, events: backfill(parsed) });
       }
     } catch {
       // Use defaults
     }
+    // One visit per day, counted when the app first opens that day.
+    setState((prev) => ((prev.events ?? []).some((e) => e.type === "visit" && isToday(e.at)) ? prev : withEvent(prev, { type: "visit" })));
     setReady(true);
   }, []);
 
@@ -280,7 +325,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       if (prev.challengeProgress[lessonId]?.completed) return prev;
 
       return {
-        ...prev,
+        ...withEvent(prev, { type: "challenge_done", lessonId }),
         profile: {
           ...prev.profile,
           points: prev.profile.points + POINTS.CHALLENGE_COMPLETE,
@@ -418,6 +463,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       earnedBadges: DEFAULT_BADGES,
       dailyActivity: [],
       authored: prev.authored,
+      events: DEFAULT_EVENTS,
     }));
   }, []);
 
@@ -443,6 +489,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         lessons,
         scenarios,
         saveAuthored,
+        track,
+        clearEvents,
         deleteAuthored,
         categories,
         badges,

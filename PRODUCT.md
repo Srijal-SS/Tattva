@@ -46,3 +46,6 @@ No user research yet. Willingness to pay, engagement and retention are untested 
 
 ## Accessibility & Inclusion
 WCAG 2.2 AA. 18px minimum for story text, plain-language copy at a Class 5–8 reading level, keyboard and screen-reader support, reduced-motion support, read-aloud for lesson text. Names, places and situations drawn from across India.
+
+## Measurement
+We record what children do (opened, chose, finished, wrote a reflection, tried the challenge), never what they write. Choice splits are for conversation, not grading: no choice is the right one.

@@ -35,7 +35,7 @@ Situation → Choose → Consequence → Perspectives → Principle → (optiona
 | 13 | Admin: author scenarios, sources, claim labels | Feasibility | **done**: Studio at `/admin` writes scenario lessons (choices, ripples, views, big idea, claims, sources) with live rule checks; drafts, preview, publish, edit, delete; saved in the browser |
 | 14 | Demo mode (localStorage) | — | exists |
 | 15 | Supabase auth + persistence | Digital delivery can scale | later |
-| 16 | Light analytics (activation → repeat → challenge done) | All of the above | later |
+| 16 | Light analytics (activation → repeat → challenge done) | All of the above | **done (local)**: event log in demo state; Studio Insights answers finish rate, return days, challenge rate, last 14 days, and choice split per lesson; JSON export |
 
 ## Deliberately NOT building (MVP)
 Social feed or chat · AI tutor · live classes · every age group · a massive content library · leaderboards against other kids · ads.
@@ -52,3 +52,4 @@ Social feed or chat · AI tutor · live classes · every age group · a massive 
 - 2026-11-25 — scenarios for lessons 2, 3, 4, 5, 6, 10; Culture lessons 11 and 12 with labelled claims and sources. Badge now unlocks on the lesson that earns it (two lessons per theme). Emoji stripped from lesson notes. Lint clean.
 - 2026-11-25 — streak is now real: days in a row (ending today or yesterday) with a finished lesson or challenge. Dinner questions can be shared or copied. Lesson player moves focus to each new step and announces it.
 - 2026-11-25 — Studio rebuilt: `/admin` lists every lesson by theme, `/admin/write` is the scenario editor. Authored lessons live in demo state (`authored`) and appear everywhere through `useDemo().lessons` / `.scenarios`. Starting the demo over keeps them.
+- 2026-11-25 — Insights (`/admin/insights`): events `visit`, `lesson_start`, `choice`, `lesson_finish`, `reflection` (yes/no only), `challenge_done`. Older saved progress is backfilled into the log on load.
