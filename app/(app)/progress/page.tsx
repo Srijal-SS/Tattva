@@ -5,6 +5,7 @@ import { useDemo } from "@/lib/demo-context";
 import { categories } from "@/lib/data/seed-categories";
 import { badges } from "@/lib/data/seed-badges";
 import { ThemeIcon } from "@/components/ui/theme-icon";
+import { CountUp } from "@/components/ui/count-up";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -31,7 +32,9 @@ export default function ProgressPage() {
           <div key={f.label}>
             <dt className="sr-only">{f.label}</dt>
             <dd>
-              <span className="block font-display text-5xl font-light tabular-nums">{f.n}</span>
+              <span className="block font-display text-5xl font-light tabular-nums">
+                <CountUp to={f.n} delay={0.1} />
+              </span>
               <span className="mt-1 block text-text-secondary">{f.label}</span>
             </dd>
           </div>
@@ -76,12 +79,17 @@ export default function ProgressPage() {
           Badges
         </h2>
         <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {badges.map((b) => {
+          {badges.map((b, i) => {
             const earned = hasBadge(b.id);
             const c = categories.find((x) => x.slug === b.categorySlug);
             return (
               <li key={b.id} className="flex flex-col items-center text-center">
-                <span
+                <motion.span
+                  initial={reduce ? false : earned ? { scale: 0.5, opacity: 0, rotate: -12 } : { opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1, rotate: 0 }}
+                  viewport={{ once: true }}
+                  transition={earned ? { type: "spring", stiffness: 320, damping: 14, delay: i * 0.08 } : { duration: 0.4, delay: i * 0.08 }}
+                  whileHover={reduce || !earned ? undefined : { rotate: -6, scale: 1.05 }}
                   className="flex h-24 w-24 items-center justify-center rounded-full border-[3px]"
                   style={
                     earned
@@ -90,7 +98,7 @@ export default function ProgressPage() {
                   }
                 >
                   <ThemeIcon name={b.icon} className="h-10 w-10" strokeWidth={1.5} />
-                </span>
+                </motion.span>
                 <span className="mt-3 font-bold">{b.name}</span>
                 <span className="mt-0.5 text-sm text-text-secondary">{earned ? b.description : b.requirement}</span>
               </li>

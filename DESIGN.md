@@ -52,6 +52,17 @@ Motion explains, it never decorates.
 - One optional three.js moment at most (landing hero), with a static fallback.
 - `prefers-reduced-motion`: fades only, no travel.
 
+## Motion system (shipped)
+- Tokens in `globals.css` follow the transitions.dev scale: `--duration-quick` 150ms (leaving), `--duration-fast` 250ms (arriving), `--duration-slow` 400ms, `--ease-smooth-out`, `--ease-bounce`. framer-motion uses the same curve, `[0.22, 1, 0.36, 1]`.
+- Page changes use React `<ViewTransition>` (in `app/(app)/layout.tsx`). Tab-to-tab: old page fades out fast, new one fades in with a 10px rise and 3px blur. Links into a lesson carry `transitionTypes={["nav-forward"]}` and slide left; "back to lessons" links slide right. Header and tab bar are pinned (`viewTransitionName`) so only content moves.
+- Nav indicator, tab bar indicator and Explore filter pill slide between items (shared `layoutId`, spring 500/38-40).
+- Points in the header roll up to each new total.
+- Every button presses to 0.97 (CSS, `globals.css`).
+- Lesson player: opening lines reveal one by one; the chosen card holds for 420ms while the others drop to 35%; outcome and ripples arrive in beats; the big idea resolves word by word through blur. This is the one emphasis moment per lesson.
+- Challenges: a ticket marked done travels into the Done list (shared `layoutId`). Progress: figures count up, earned badges spring in. Learn: journey stops rise in order; the next stop has a breathing ring.
+- Reduced motion: every framer animation has a no-motion path, CSS transitions/animations are clamped, view transitions are switched off.
+- Not used, on purpose: three.js (heavy, and 3D doesn't fit a paper field journal), anime.js and Lenis (framer-motion and native scrolling already cover it).
+
 ## Components
 Shipped: `components/lesson/scenario-player.tsx` (step rail, read-aloud, choice buttons with A/B/C marks, ripple list, other-outcomes disclosure, perspective quotes, principle panel, private reflection).
 Shipped: `components/lesson/lesson-complete.tsx` (seal with logo, points + breakdown, big-idea pull quote, badge row, tear-off ChallengeTicket with notched mask and a "Done" ink stamp, "Up next" card linking to the next unfinished lesson).
@@ -87,3 +98,4 @@ Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a
 - 2026-11-25 — landing page rebuilt as the ticket (0 inspector FAILs at 1440/768/390).
 - 2026-11-25 — lesson completion + challenge ticket shipped; separate "challenge accepted" screen removed.
 - 2026-11-25 — all app screens moved to the field-journal style; emoji, gradients and eyebrow pills removed from the app.
+- 2026-11-25 — motion system: page view transitions, sliding indicators, choice beat, big-idea reveal, ticket travel, count-ups.

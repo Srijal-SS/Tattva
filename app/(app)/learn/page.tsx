@@ -82,7 +82,7 @@ export default function LearnPage() {
                 <p className="mt-4 max-w-[52ch] text-lg leading-relaxed">{today.description}</p>
               )}
               <Link
-                href={`/lesson/${today.id}`}
+                href={`/lesson/${today.id}`} transitionTypes={["nav-forward"]}
                 className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-lg font-semibold text-text-inverse transition-colors hover:bg-primary-dark"
               >
                 {todayScenario ? "What would you do?" : "Start lesson"}
@@ -159,12 +159,19 @@ export default function LearnPage() {
                         transition={{ duration: 0.9, ease: EASE, delay: 0.1 * ti }}
                       />
                     </div>
-                    {stops.map((l) => {
+                    {stops.map((l, si) => {
                       const isDone = isLessonCompleted(l.id);
                       const isNext = l.id === nextId;
                       return (
-                        <li key={l.id} className="relative">
-                          <Link href={`/lesson/${l.id}`} className="group flex items-start gap-4 sm:flex-col sm:items-center sm:text-center">
+                        <motion.li
+                          key={l.id}
+                          className="relative"
+                          initial={reduce ? false : { opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.4, ease: EASE, delay: 0.1 * ti + 0.12 * si }}
+                        >
+                          <Link href={`/lesson/${l.id}`} transitionTypes={["nav-forward"]} className="group flex items-start gap-4 sm:flex-col sm:items-center sm:text-center">
                             <span
                               className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[3px] bg-surface transition-transform group-hover:scale-110"
                               style={{
@@ -173,7 +180,13 @@ export default function LearnPage() {
                               }}
                             >
                               {isDone && <Check className="h-5 w-5 text-text-inverse" strokeWidth={3} aria-hidden />}
-                              {isNext && <span className="h-3 w-3 rounded-full motion-safe:animate-pulse" style={{ backgroundColor: theme.color }} />}
+                              {isNext && (
+                                <>
+                                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: theme.color }} />
+                                  {/* A soft ring breathes out from the next stop: "you are here". */}
+                                  <span aria-hidden className="absolute inset-[-3px] rounded-full border-2 motion-safe:animate-[ping_2.2s_cubic-bezier(0,0,0.2,1)_infinite]" style={{ borderColor: theme.color }} />
+                                </>
+                              )}
                             </span>
                             <span>
                               <span className="block font-semibold leading-snug group-hover:underline group-hover:underline-offset-4">
@@ -185,7 +198,7 @@ export default function LearnPage() {
                               </span>
                             </span>
                           </Link>
-                        </li>
+                        </motion.li>
                       );
                     })}
                   </ol>

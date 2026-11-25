@@ -47,3 +47,9 @@ Every video or claim must pass:
 - Set it in a named Indian place, and vary the cities.
 - Safety lessons (lost, roads) may show real risk in outcomes, but never graphic harm.
 - Culture: every claim gets a kind and the lesson gets sources. If a claim can't be sourced, cut it.
+
+## Motion
+- Page transitions: React `<ViewTransition>` (ships with Next 16; read `node_modules/next/dist/docs/01-app/02-guides/view-transitions.md`). No library.
+- In-page motion: framer-motion. Durations and easing from the tokens in DESIGN.md.
+- transitions.dev skill for named patterns (tabs sliding, text reveal, number pop-in).
+- Don't add three.js, anime.js or a smooth-scroll library without a specific need DESIGN.md agrees with.

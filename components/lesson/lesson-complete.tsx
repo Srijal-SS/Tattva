@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { CountUp } from "@/components/ui/count-up";
 import { ArrowRight, Award, Check, RotateCcw } from "lucide-react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -97,7 +98,7 @@ export function LessonComplete({
       <motion.div {...rise(0.95)} className="mx-auto mt-10 flex max-w-[34rem] flex-col gap-4">
         {nextLesson ? (
           <Link
-            href={`/lesson/${nextLesson.id}`}
+            href={`/lesson/${nextLesson.id}`} transitionTypes={["nav-forward"]}
             className="group flex items-center justify-between gap-4 rounded-2xl bg-primary px-6 py-4 text-text-inverse shadow-card transition-colors hover:bg-primary-dark"
           >
             <span>
@@ -109,6 +110,7 @@ export function LessonComplete({
         ) : (
           <Link
             href="/learn"
+            transitionTypes={["nav-back"]}
             className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-text-inverse shadow-card transition-colors hover:bg-primary-dark"
           >
             Back to all lessons
@@ -175,20 +177,6 @@ function Stamp({ fresh }: { fresh: boolean }) {
       />
     </motion.div>
   );
-}
-
-function CountUp({ to }: { to: number }) {
-  const reduce = useReducedMotion();
-  const value = useMotionValue(reduce ? to : 0);
-  const rounded = useTransform(value, (v) => Math.round(v));
-
-  useEffect(() => {
-    if (reduce) return;
-    const controls = animate(value, to, { duration: 0.9, ease: EASE, delay: 0.5 });
-    return () => controls.stop();
-  }, [to, reduce, value]);
-
-  return <motion.span>{rounded}</motion.span>;
 }
 
 /** A tear-off ticket: the challenge leaves the screen and goes into real life. */

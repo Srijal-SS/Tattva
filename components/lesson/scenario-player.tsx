@@ -22,6 +22,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
   const [step, setStep] = useState(0);
   const [choiceId, setChoiceId] = useState<string | null>(null);
   const [showOthers, setShowOthers] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
   const [showNote, setShowNote] = useState(false);
   const storageKey = `tattva-reflection-${scenario.lessonId}`;
   // Safe as a lazy initializer: the textarea only renders on the last step, after hydration.
@@ -61,11 +62,17 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   };
 
+  // The chosen card holds for a beat (the others step back) before the consequence plays, so the decision lands.
   const choose = (id: string) => {
+    if (picked) return;
     sounds.playClick();
+    setPicked(id);
     setChoiceId(id);
     setShowOthers(false);
-    changeStep(1);
+    setTimeout(() => {
+      setPicked(null);
+      changeStep(1);
+    }, reduce ? 0 : 420);
   };
 
   const narrationFor = (): string => {
@@ -114,6 +121,12 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
     exit: { opacity: 0, y: reduce ? 0 : -8 },
     transition: { duration: 0.32, ease: EASE },
   };
+  // Text reveal: staggered blurred rise for the opening lines.
+  const reveal = (i: number) => ({
+    initial: reduce ? false : { opacity: 0, y: 12, filter: "blur(3px)" },
+    animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+    transition: { duration: 0.5, ease: EASE, delay: 0.1 + i * 0.16 },
+  });
   const beat = (i: number) => ({
     initial: { opacity: 0, y: reduce ? 0 : 10 },
     animate: { opacity: 1, y: 0 },
@@ -169,29 +182,55 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
               {scenario.setting}
             </p>
             <div className="space-y-4 font-display text-[1.3rem] leading-[1.55] text-text-primary max-w-[62ch]">
-              {scenario.setup.map((p) => (
-                <p key={p}>{p}</p>
+              {scenario.setup.map((p, i) => (
+                <motion.p key={p} {...reveal(i)}>
+                  {p}
+                </motion.p>
               ))}
             </div>
-            <h2 className="mt-8 mb-4 text-2xl font-semibold">{scenario.prompt}</h2>
+            <motion.h2 {...reveal(scenario.setup.length)} className="mt-8 mb-4 text-2xl font-semibold">
+              {scenario.prompt}
+            </motion.h2>
             <div className="grid gap-3" role="group" aria-label="Choices">
-              {scenario.choices.map((c, i) => (
+              {scenario.choices.map((c, i) => {
+                const isPicked = picked === c.id;
+                return (
                 <motion.button
                   key={c.id}
                   type="button"
                   onClick={() => choose(c.id)}
+                  initial={reduce ? false : { opacity: 0, y: 12 }}
+                  animate={
+                    picked
+                      ? isPicked
+                        ? { opacity: 1, y: 0, scale: reduce ? 1 : 1.015 }
+                        : { opacity: 0.35, y: 0, scale: reduce ? 1 : 0.98 }
+                      : { opacity: 1, y: 0, scale: 1 }
+                  }
+                  transition={
+                    picked
+                      ? { type: "spring", stiffness: 420, damping: 26 }
+                      : { duration: 0.4, ease: EASE, delay: 0.25 + (scenario.setup.length + 1 + i) * 0.09 }
+                  }
                   whileTap={reduce ? undefined : { scale: 0.985 }}
-                  className="group flex w-full items-start gap-4 rounded-2xl border border-border bg-surface px-5 py-4 text-left text-lg shadow-card transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card-hover"
+                  className={cn(
+                    "group flex w-full items-start gap-4 rounded-2xl border bg-surface px-5 py-4 text-left text-lg shadow-card transition-[border-color,box-shadow,background-color] duration-200",
+                    isPicked ? "border-primary bg-primary-50 shadow-card-hover" : "border-border hover:border-primary/50 hover:shadow-card-hover"
+                  )}
                 >
                   <span
                     aria-hidden
-                    className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/40 font-display text-base font-semibold text-primary transition-colors group-hover:bg-primary group-hover:text-text-inverse"
+                    className={cn(
+                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/40 font-display text-base font-semibold transition-colors group-hover:bg-primary group-hover:text-text-inverse",
+                      isPicked ? "bg-primary text-text-inverse" : "text-primary"
+                    )}
                   >
                     {String.fromCharCode(65 + i)}
                   </span>
                   <span className="leading-snug">{c.text}</span>
                 </motion.button>
-              ))}
+                );
+              })}
             </div>
             <p className="mt-4 text-sm text-text-secondary">
               There’s no score here. Pick what you’d honestly do.
@@ -269,7 +308,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
             <p className="mb-6 text-text-secondary">Everyone in a situation has their own reasons.</p>
             <ul className="space-y-6">
               {scenario.perspectives.map((p, i) => (
-                <motion.li key={p.who} {...beat(i)}>
+                <motion.li key={p.who} {...beat(i)} className="border-l-[3px] border-primary/30 pl-5">
                   <blockquote className="font-display text-xl leading-relaxed">{p.view}</blockquote>
                   <p className="mt-1.5 text-sm font-semibold text-primary">{p.who}</p>
                 </motion.li>
@@ -282,10 +321,29 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
         {step === 3 && (
           <motion.div key="principle" {...enter}>
             <div className="rounded-3xl bg-primary-50 px-6 py-8 sm:px-10 sm:py-10">
-              <h2 className="text-3xl sm:text-4xl font-semibold leading-tight text-primary-dark">
-                {scenario.principle.title}
+              {/* The big idea resolves word by word through a soft blur: the lesson's one emphasis moment. */}
+              <h2 className="text-3xl sm:text-4xl font-semibold leading-tight text-primary-dark" aria-label={scenario.principle.title}>
+                {scenario.principle.title.split(" ").map((w, i) => (
+                  <motion.span
+                    key={i}
+                    aria-hidden
+                    className="inline-block whitespace-pre"
+                    initial={reduce ? false : { opacity: 0, y: 8, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.5, ease: EASE, delay: 0.15 + i * 0.06 }}
+                  >
+                    {w}{" "}
+                  </motion.span>
+                ))}
               </h2>
-              <p className="mt-4 text-lg leading-relaxed max-w-[60ch]">{scenario.principle.body}</p>
+              <motion.p
+                initial={reduce ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: EASE, delay: 0.3 + scenario.principle.title.split(" ").length * 0.06 }}
+                className="mt-4 text-lg leading-relaxed max-w-[60ch]"
+              >
+                {scenario.principle.body}
+              </motion.p>
             </div>
             {scenario.claims && (
               <ul className="mt-6 space-y-3" aria-label="What we know, and how we know it">
