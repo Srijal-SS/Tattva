@@ -21,7 +21,7 @@ const navItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { state } = useDemo();
+  const { state, getStreak } = useDemo();
   const [menuOpen, setMenuOpen] = useState(false);
   const [muted, setMuted] = useState(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -95,7 +95,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Avatar id={state.profile.avatar} className="h-10 w-10" />
               <div>
                 <p className="font-bold">{state.profile.name}</p>
-                <p className="text-sm text-text-secondary">{state.profile.streak}-day streak</p>
+                <p className="text-sm text-text-secondary">{getStreak()}-day streak</p>
               </div>
             </div>
             <div className="mt-3 flex gap-4 text-sm font-semibold">

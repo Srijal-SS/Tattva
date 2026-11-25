@@ -8,9 +8,13 @@ import { categories } from "@/lib/data/seed-categories";
 import { lessons } from "@/lib/data/seed-lessons";
 import { scenarios } from "@/lib/data/seed-scenarios";
 import { ThemeIcon } from "@/components/ui/theme-icon";
+import { ShareButton } from "@/components/ui/share-button";
+
+const question = (title: string, reflection?: string) =>
+  reflection ?? `What would you do differently after “${title}”?`;
 
 export default function ParentsPage() {
-  const { state, isLessonCompleted, isChallengeCompleted, getCompletedLessonCount, getCompletedChallengeCount } = useDemo();
+  const { state, isLessonCompleted, isChallengeCompleted, getCompletedLessonCount, getCompletedChallengeCount, getStreak } = useDemo();
   const profile = state.profile;
   const published = lessons.filter((l) => l.published);
   const finished = published.filter((l) => isLessonCompleted(l.id));
@@ -25,7 +29,7 @@ export default function ParentsPage() {
         to them: you see the situations, never their answers.
       </p>
       <p className="mt-4 font-semibold">
-        {getCompletedLessonCount()} lessons · {getCompletedChallengeCount()} tried in real life · {profile.streak}-day streak
+        {getCompletedLessonCount()} lessons · {getCompletedChallengeCount()} tried in real life · {getStreak()}-day streak
       </p>
 
       <section aria-labelledby="practised-heading" className="mt-12">
@@ -45,13 +49,14 @@ export default function ParentsPage() {
                   </p>
                   <h3 className="mt-2 text-xl font-semibold">{l.title}</h3>
                   <p className="mt-1 text-text-secondary">{s ? s.principle.title : l.description}</p>
-                  <p className="mt-4 flex gap-2.5 rounded-2xl bg-paper-deep p-4">
+                  <div className="mt-4 flex flex-wrap items-start gap-x-2.5 gap-y-2 rounded-2xl bg-paper-deep p-4">
                     <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-                    <span>
+                    <p className="min-w-0 flex-1 basis-56">
                       <span className="font-semibold">Ask at dinner: </span>
-                      {s ? s.reflection : `What would you do differently after “${l.title}”?`}
-                    </span>
-                  </p>
+                      {question(l.title, s?.reflection)}
+                    </p>
+                    <ShareButton describedAs={`the dinner question for ${l.title}`} text={`A question for dinner, from ${profile.name}'s Tattva lesson "${l.title}": ${question(l.title, s?.reflection)}`} />
+                  </div>
                 </li>
               );
             })}

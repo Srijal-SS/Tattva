@@ -9,7 +9,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { ThemeIcon } from "@/components/ui/theme-icon";
 
 export default function ProfilePage() {
-  const { state, getCompletedLessonCount, resetDemo } = useDemo();
+  const { state, getCompletedLessonCount, resetDemo, getStreak } = useDemo();
   const profile = state.profile;
   const interests = categories.filter((c) => profile.interests.includes(c.slug));
   const earned = badges.filter((b) => state.earnedBadges.some((ub) => ub.badgeId === b.id));
@@ -25,7 +25,7 @@ export default function ProfilePage() {
         <div>
           <h1 className="text-4xl font-semibold">{profile.name}</h1>
           <p className="mt-1 text-text-secondary">
-            Age {profile.age} · {profile.points} points · {getCompletedLessonCount()} lessons · {profile.streak}-day streak
+            Age {profile.age} · {profile.points} points · {getCompletedLessonCount()} lessons · {getStreak()}-day streak
           </p>
         </div>
       </div>

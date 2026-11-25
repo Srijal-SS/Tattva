@@ -134,6 +134,8 @@ interface DemoContextType {
   // Stats
   getCompletedLessonCount: () => number;
   getCompletedChallengeCount: () => number;
+  /** Days in a row, ending today or yesterday, on which a lesson or real-life challenge was finished. */
+  getStreak: () => number;
   getCategoryProgress: (categorySlug: string) => {
     completed: number;
     total: number;
@@ -334,6 +336,23 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     [state.challengeProgress]
   );
 
+  const getStreak = useCallback(() => {
+    const day = (d: Date) => d.toLocaleDateString("en-CA");
+    const days = new Set(
+      [...Object.values(state.lessonProgress), ...Object.values(state.challengeProgress)]
+        .filter((p) => p.completed && p.completedAt)
+        .map((p) => day(new Date(p.completedAt!)))
+    );
+    const d = new Date();
+    if (!days.has(day(d))) d.setDate(d.getDate() - 1); // today isn't over yet, so a streak can still end yesterday
+    let n = 0;
+    while (days.has(day(d))) {
+      n++;
+      d.setDate(d.getDate() - 1);
+    }
+    return n;
+  }, [state.lessonProgress, state.challengeProgress]);
+
   const getCategoryProgress = useCallback(
     (categorySlug: string) => {
       const category = categories.find((c) => c.slug === categorySlug);
@@ -383,6 +402,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         checkAndAwardBadges,
         getCompletedLessonCount,
         getCompletedChallengeCount,
+        getStreak,
         getCategoryProgress,
         lessons,
         categories,

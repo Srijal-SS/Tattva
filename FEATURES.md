@@ -50,3 +50,4 @@ Social feed or chat · AI tutor · live classes · every age group · a massive 
 - 2026-11-25 — landing page rebuilt; lesson menu shows the four-theme grouping (seed data not remapped yet).
 - 2026-11-25 — every app screen redone in the field-journal style: shell nav, Learn, Explore, Challenges, Progress, Profile, Parents, Onboarding, Login, Signup. No emoji left in the UI. Login/signup are honest demo forms (nothing leaves the browser).
 - 2026-11-25 — scenarios for lessons 2, 3, 4, 5, 6, 10; Culture lessons 11 and 12 with labelled claims and sources. Badge now unlocks on the lesson that earns it (two lessons per theme). Emoji stripped from lesson notes. Lint clean.
+- 2026-11-25 — streak is now real: days in a row (ending today or yesterday) with a finished lesson or challenge. Dinner questions can be shared or copied. Lesson player moves focus to each new step and announces it.

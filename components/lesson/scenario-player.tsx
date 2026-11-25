@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown, Lock, MapPin, Volume2, VolumeX } from "lucide-react";
 import { sounds } from "@/lib/audio";
@@ -37,6 +37,17 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
   const choice = scenario.choices.find((c) => c.id === choiceId);
 
   useEffect(() => () => stopSpeaking(), []);
+
+  // After a step change, move focus to the new step so keyboard and screen-reader users keep their place.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    panelRef.current?.focus({ preventScroll: true });
+  }, [step]);
 
   const changeStep = (next: number) => {
     stopSpeaking();
@@ -146,6 +157,10 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
         </div>
       </div>
 
+      <p className="sr-only" aria-live="polite">
+        Step {step + 1} of {STEPS.length}: {STEPS[step]}
+      </p>
+      <div ref={panelRef} tabIndex={-1} className="outline-none">
       <AnimatePresence mode="wait">
         {step === 0 && (
           <motion.div key="situation" {...enter}>
@@ -348,6 +363,7 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </section>
   );
 }

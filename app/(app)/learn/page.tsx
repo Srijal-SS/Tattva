@@ -19,7 +19,7 @@ function greeting() {
 
 export default function LearnPage() {
   const reduce = useReducedMotion();
-  const { state, isLessonCompleted } = useDemo();
+  const { state, isLessonCompleted, getStreak } = useDemo();
   const profile = state.profile;
   const published = lessons.filter((l) => l.published);
 
@@ -43,7 +43,7 @@ export default function LearnPage() {
           <p className="mt-1 flex flex-wrap items-center gap-x-3 text-text-secondary">
             <span className="inline-flex items-center gap-1">
               <Flame className="h-4 w-4 text-accent-orange" aria-hidden />
-              {profile.streak}-day streak
+              {getStreak()}-day streak
             </span>
             <span aria-hidden>·</span>
             <span>

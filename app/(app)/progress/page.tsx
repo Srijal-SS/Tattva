@@ -10,12 +10,12 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function ProgressPage() {
   const reduce = useReducedMotion();
-  const { state, getCompletedLessonCount, getCompletedChallengeCount, getCategoryProgress, hasBadge } = useDemo();
+  const { state, getCompletedLessonCount, getCompletedChallengeCount, getCategoryProgress, hasBadge, getStreak } = useDemo();
 
   const figures = [
     { n: getCompletedLessonCount(), label: "lessons finished" },
     { n: getCompletedChallengeCount(), label: "challenges done in real life" },
-    { n: state.profile.streak, label: "days in a row" },
+    { n: getStreak(), label: "days in a row" },
     { n: state.profile.points, label: "points" },
   ];
 
