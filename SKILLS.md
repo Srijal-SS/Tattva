@@ -23,6 +23,10 @@ Living file. Record which tool or library was used for what and why, so we don't
 | Kokonut UI / motion.dev | reference | copy patterns, not whole kits | adapt to our tokens, never ship their default look |
 | Dribbble | reference | inspiration only | never copy a shot one to one |
 
+## Pictures
+- Found pictures come from open collections via the design-taste skill's `assets.mjs`. They're converted to webp in `public/world/`, and each one is listed in `public/world/credits.json`, which the footer renders. Remove an entry when its picture goes.
+- Avoid identifiable children in found photos, and avoid religious symbols used as decoration (one Diwali photo was dropped for this).
+
 ## Content sourcing rules
 **Good:** Kids Pharmer — age-appropriate, clear, well produced.
 **Poor:** School Cinema (`youtube.com/@SchoolCinema`) — moralising, preachy, low production. Avoid.

@@ -20,7 +20,7 @@ Situation → Choose → Consequence → Perspectives → Principle → (optiona
 ## Status
 | # | Feature | Tests assumption | Status |
 |---|---|---|---|
-| 1 | Landing page (pitch to parent and child) | Parents trust the platform | exists, redesign |
+| 1 | Landing page (pitch to parent and child) | Parents trust the platform | **done**: playable hero scenario, lesson menu, parent letter |
 | 2 | Onboarding (name, age, avatar, interests) | Children will engage | exists, redesign |
 | 3 | Theme remap to 4 themes | — (consistency) | todo |
 | 4 | Scenario lesson player (branching choices + consequences) | Scenario learning improves reasoning | **done** for lessons 1, 7, 8, 9; others fall back to read + quiz |
@@ -47,3 +47,4 @@ Social feed or chat · AI tutor · live classes · every age group · a massive 
 - 2026-11-25 — scope set: scenario-first MVP, 4 themes, ages 10–14.
 - 2026-11-25 — scenario player + 4 scenarios (`lib/data/seed-scenarios.ts`). Admin can't author scenarios yet.
 - 2026-11-25 — completion screen: seal, points breakdown, big idea, challenge ticket, real "Up next" lesson. Fixed demo progress being wiped on reload.
+- 2026-11-25 — landing page rebuilt; lesson menu shows the four-theme grouping (seed data not remapped yet).

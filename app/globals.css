@@ -17,6 +17,10 @@
   --color-ink: #231A12;
   --color-ink-soft: #5E4F42;
   --color-line: #E3D5BE;
+  /* Chakra navy, taken from the logo's wheel: the field paper sits on */
+  --color-chakra: #1C3263;
+  --color-chakra-deep: #142547;
+  --color-chakra-ink: #E8E2D4;
 
   /* --- Brand: lotus sienna (from the Tattva mark) --- */
   --color-primary: #A3401F;
@@ -287,4 +291,10 @@ input, textarea {
 ::selection {
   background: var(--color-primary-200);
   color: var(--color-primary-dark);
+}
+
+/* Slow drift for the one moving picture on the landing page */
+@keyframes drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.08) translate3d(-1.5%, -1%, 0); }
 }

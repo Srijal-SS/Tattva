@@ -20,6 +20,7 @@ Warm, editorial, storybook. It echoes the poster's hand-drawn warmth but stays r
 | ink-soft | `#5E4F42` | secondary text |
 | line | `#E3D5BE` | borders, rules |
 | primary | `#A3401F` (lotus sienna) | brand, buttons, links, focus |
+| chakra | `#1C3263` (navy from the logo's wheel) | the field paper sits on: landing hero, CTA, footer |
 | values | `#B8461C` (terracotta) | Values theme |
 | culture | `#6E3A8C` (plum) | Culture theme |
 | civic | `#0F6B63` (teal) | Civic Sense theme |
@@ -56,6 +57,13 @@ Shipped: `components/lesson/scenario-player.tsx` (step rail, read-aloud, choice 
 Shipped: `components/lesson/lesson-complete.tsx` (seal with logo, points + breakdown, big-idea pull quote, badge row, tear-off ChallengeTicket with notched mask and a "Done" ink stamp, "Up next" card linking to the next unfinished lesson).
 To build: ClaimLabel (fact / interpretation / tradition / belief) · SourceNote · JourneyMap · ParentInsightCard
 
+## Landing page (shipped)
+Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a paper ticket with cut corners on the chakra-navy field, with the h1 printed on it and a perforated stub that holds a live, playable scenario (lesson 1). Every later section is another piece of the same stationery: the lesson menu as a scallop-edged sheet on teal, the parent letter with a tear-off strip, a tilted reply card, and a footer that is the back of the card.
+- Direction: tasteskill "page is the object" (seed 195632540). The dealt curtain-footer move was dropped because it hid the footer heading.
+- Landing buttons: square-cornered (`rounded-sm`), one fill each. No shadows at rest; surfaces separate by tone.
+- Pictures (`public/world/`, credited in the footer from `credits.json`): Kharghar station, Johari Bazaar postcard, diyas and rangoli, Jaipur street, samosas. These show the children's world, never Tattva's own users.
+- Known tension: the inspector flags the cream paper with sienna as an "assistant palette". It's kept because it's the committed brand, and the navy field carries most of the landing page. Revisit if it starts to read generic.
+
 ## Rules learned
 - Global h1–h3 display font lives in `@layer base` so `font-sans` on a heading still wins.
 - Text on an SVG circle: set `textLength` to the circumference so the phrase meets itself.
@@ -63,4 +71,5 @@ To build: ClaimLabel (fact / interpretation / tradition / belief) · SourceNote 
 ## Changelog
 - 2026-11-25 — direction proposed.
 - 2026-11-25 — tokens, fonts, grain shipped; scenario player shipped. Nav and other pages still use old layouts (and emoji) under the new palette.
+- 2026-11-25 — landing page rebuilt as the ticket (0 inspector FAILs at 1440/768/390).
 - 2026-11-25 — lesson completion + challenge ticket shipped; separate "challenge accepted" screen removed.

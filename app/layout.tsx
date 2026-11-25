@@ -7,6 +7,7 @@ const display = Fraunces({
   variable: "--font-display-face",
   subsets: ["latin"],
   axes: ["SOFT", "opsz"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
