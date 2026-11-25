@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Nunito_Sans } from "next/font/google";
 import { DemoProvider } from "@/lib/demo-context";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const display = Fraunces({
+  variable: "--font-display-face",
+  subsets: ["latin"],
+  axes: ["SOFT", "opsz"],
+  display: "swap",
+});
+
+const body = Nunito_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
@@ -36,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

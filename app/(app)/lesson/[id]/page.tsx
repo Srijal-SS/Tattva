@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,10 +10,6 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  Trophy,
-  Star,
-  Sparkles,
-  RotateCcw,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -21,12 +17,15 @@ import { useDemo } from "@/lib/demo-context";
 import { sounds } from "@/lib/audio";
 import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
+import { scenarios } from "@/lib/data/seed-scenarios";
+import { ScenarioPlayer } from "@/components/lesson/scenario-player";
+import { LessonComplete } from "@/components/lesson/lesson-complete";
 import { Question, POINTS } from "@/types";
 
 // ============================================================
 // Lesson Phases
 // ============================================================
-type LessonPhase = "learn" | "question" | "feedback" | "complete" | "challenge";
+type LessonPhase = "scenario" | "learn" | "question" | "feedback" | "complete" | "challenge";
 
 // ============================================================
 // Component
@@ -42,6 +41,7 @@ export default function LessonPage() {
     completeChallenge,
     isChallengeCompleted,
     checkAndAwardBadges,
+    getLessonProgress,
     state,
   } = useDemo();
 
@@ -57,14 +57,23 @@ export default function LessonPage() {
   const alreadyCompleted = isLessonCompleted(lessonId);
   const challengeDone = isChallengeCompleted(lessonId);
 
+  // Next unfinished lesson after this one, wrapping to the start.
+  const nextLesson = useMemo(() => {
+    const i = lessons.findIndex((l) => l.id === lessonId);
+    const order = [...lessons.slice(i + 1), ...lessons.slice(0, i)];
+    return order.find((l) => l.published && !isLessonCompleted(l.id));
+  }, [lessonId, isLessonCompleted]);
+
+  const scenario = scenarios[lessonId];
+  const startPhase: LessonPhase = scenario ? "scenario" : "learn";
   const [phase, setPhase] = useState<LessonPhase>(
-    alreadyCompleted ? "complete" : "learn"
+    alreadyCompleted ? "complete" : startPhase
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answeredCorrectly, setAnsweredCorrectly] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [justFinished, setJustFinished] = useState(false);
   const [earnedBadgeId, setEarnedBadgeId] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -97,6 +106,7 @@ export default function LessonPage() {
   }
 
   const questions = lesson.questions ?? [];
+  const earnedBadge = state.earnedBadges.find((b) => b.badgeId === earnedBadgeId)?.badge;
   const currentQuestion: Question | undefined = questions[currentQuestionIndex];
 
   // ============================================================
@@ -172,8 +182,7 @@ export default function LessonPage() {
     sounds.playCelebration();
     if (!alreadyCompleted) {
       completeLesson(lessonId, score);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 3000);
+      setJustFinished(true);
 
       // Check for badge
       setTimeout(() => {
@@ -193,7 +202,7 @@ export default function LessonPage() {
 
   const handleRetakeLesson = () => {
     sounds.playClick();
-    setPhase("learn");
+    setPhase(startPhase);
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setAnsweredCorrectly(false);
@@ -259,54 +268,8 @@ export default function LessonPage() {
     );
   };
 
-  // ============================================================
-  // Confetti
-  // ============================================================
-  const confettiColors = [
-    "#0284C7",
-    "#FBBF24",
-    "#22C55E",
-    "#EC4899",
-    "#F97316",
-    "#0EA5E9",
-  ];
-
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 relative">
-      {/* Confetti */}
-      <AnimatePresence>
-        {showConfetti && (
-          <div className="fixed inset-0 pointer-events-none z-50">
-            {Array.from({ length: 30 }).map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{
-                  opacity: 1,
-                  x: Math.random() * window.innerWidth,
-                  y: -20,
-                  rotate: 0,
-                  scale: Math.random() * 0.5 + 0.5,
-                }}
-                animate={{
-                  y: window.innerHeight + 20,
-                  rotate: Math.random() * 720 - 360,
-                  x: `+=${Math.random() * 200 - 100}`,
-                }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: Math.random() * 2 + 1.5,
-                  ease: "easeOut",
-                }}
-                className="absolute w-3 h-3 rounded-sm"
-                style={{
-                  backgroundColor:
-                    confettiColors[i % confettiColors.length],
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* ==================== BACK BUTTON ==================== */}
       <button
@@ -346,7 +309,7 @@ export default function LessonPage() {
       </div>
 
       {/* ==================== PROGRESS INDICATOR ==================== */}
-      {phase !== "complete" && (
+      {phase !== "complete" && phase !== "scenario" && (
         <div className="flex items-center gap-2 mb-6">
           {["learn", ...(questions.length > 0 ? ["questions"] : []), "challenge"].map(
             (step) => {
@@ -375,6 +338,20 @@ export default function LessonPage() {
             }
           )}
         </div>
+      )}
+
+      {/* ==================== PHASE: SCENARIO ==================== */}
+      {phase === "scenario" && scenario && (
+        <ScenarioPlayer
+          scenario={scenario}
+          fullNote={formatContent(lesson.content)}
+          onFinish={(wrote) => {
+            // Reflection bonus; also feeds the "+N points" shown on the completion screen.
+            const bonus = wrote ? POINTS.CORRECT_ANSWER : 0;
+            setTotalScore(bonus);
+            handleLessonComplete(bonus);
+          }}
+        />
       )}
 
       {/* ==================== PHASE: LEARN ==================== */}
@@ -576,167 +553,26 @@ export default function LessonPage() {
 
         {/* ==================== PHASE: COMPLETE ==================== */}
         {phase === "complete" && (
-          <motion.div
-            key="complete"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border text-center mb-6">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{
-                  delay: 0.2,
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 15,
-                }}
-                className="w-20 h-20 rounded-full bg-accent-green/10 flex items-center justify-center mx-auto mb-4"
-              >
-                <Trophy className="w-10 h-10 text-accent-green" />
-              </motion.div>
-
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
-                Great job! 🎉
-              </h2>
-              <p className="text-text-secondary mb-6">
-                You completed:{" "}
-                <strong className="text-text-primary">{lesson.title}</strong>
-              </p>
-
-              {/* Points earned */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent-yellow/10 mb-6"
-              >
-                <Star className="w-5 h-5 text-accent-yellow-dark" />
-                <span className="text-lg font-bold text-accent-yellow-dark">
-                  +{lesson.points + totalScore} Tattva Points
-                </span>
-              </motion.div>
-
-              {/* Badge earned */}
-              {earnedBadgeId && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6, type: "spring" }}
-                  className="mb-6 p-4 rounded-2xl bg-primary-50 border border-primary-100"
-                >
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-bold text-primary">
-                      Badge Unlocked!
-                    </span>
-                  </div>
-                  <p className="text-2xl">
-                    {state.earnedBadges.find((b) => b.badgeId === earnedBadgeId)
-                      ?.badge?.icon ?? "🏆"}
-                  </p>
-                  <p className="text-sm font-semibold text-text-primary mt-1">
-                    {state.earnedBadges.find((b) => b.badgeId === earnedBadgeId)
-                      ?.badge?.name ?? "Achievement"}
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Challenge CTA */}
-              {lesson.challenge && (
-                <div className="bg-surface-secondary rounded-2xl p-5 text-left mb-6">
-                  <h3 className="text-sm font-bold text-text-primary mb-2 flex items-center gap-2">
-                    🌍 Your Tattva Challenge
-                  </h3>
-                  <p className="text-sm text-text-secondary mb-4">
-                    {lesson.challenge}
-                  </p>
-                  {challengeDone ? (
-                    <div className="flex items-center gap-2 text-accent-green text-sm font-medium">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Challenge completed! Awesome!
-                    </div>
-                  ) : (
-                    <div className="flex gap-3">
-                      <button
-                        onClick={handleCompleteChallenge}
-                        className="flex-1 px-4 py-2.5 rounded-xl bg-accent-green text-white text-sm font-semibold hover:bg-accent-green-dark transition-colors"
-                      >
-                        Done ✓
-                      </button>
-                      <button
-                        onClick={() => setPhase("challenge")}
-                        className="flex-1 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold text-text-secondary hover:bg-surface-tertiary transition-colors"
-                      >
-                        I&apos;ll Try It
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/learn"
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
-                >
-                  Next Lesson
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <button
-                  onClick={handleRetakeLesson}
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border text-text-secondary font-semibold hover:bg-surface-tertiary transition-colors"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Review Lesson
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* ==================== PHASE: CHALLENGE ACCEPTED ==================== */}
-        {phase === "challenge" && (
-          <motion.div
-            key="challenge"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border text-center">
-              <div className="w-16 h-16 rounded-full bg-accent-green/10 flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🌍</span>
-              </div>
-
-              <h2 className="text-xl font-bold text-text-primary mb-2">
-                Challenge Accepted!
-              </h2>
-              <p className="text-text-secondary mb-6">{lesson.challenge}</p>
-              <p className="text-sm text-text-tertiary mb-6">
-                Complete this challenge in the real world, then come back and
-                mark it as done.
-              </p>
-
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => {
-                    handleCompleteChallenge();
-                    setPhase("complete");
-                  }}
-                  className="w-full px-5 py-3 rounded-xl bg-accent-green text-white font-semibold hover:bg-accent-green-dark transition-colors"
-                >
-                  Mark as Complete ✓
-                </button>
-                <button
-                  onClick={() => setPhase("complete")}
-                  className="w-full px-5 py-3 rounded-xl border border-border text-text-secondary font-semibold hover:bg-surface-tertiary transition-colors"
-                >
-                  Back to Results
-                </button>
-              </div>
-            </div>
+          <motion.div key="complete" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+            <LessonComplete
+              earned={
+                justFinished
+                  ? {
+                      base: lesson.points,
+                      bonus: totalScore,
+                      bonusLabel: scenario ? "for reflecting" : "for right answers",
+                    }
+                  : null
+              }
+              completedAt={getLessonProgress(lessonId)?.completedAt}
+              bigIdea={scenario?.principle.title}
+              badge={earnedBadge}
+              challenge={lesson.challenge}
+              challengeDone={challengeDone}
+              onChallengeDone={handleCompleteChallenge}
+              nextLesson={nextLesson}
+              onReview={handleRetakeLesson}
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import {
   DemoState,
   UserProfile,
@@ -197,8 +197,14 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Save to localStorage on change
+  // Save to localStorage on change. Skip the first run: it holds the defaults, and
+  // writing them would clobber saved progress before the load above is applied.
+  const skippedFirstSave = useRef(false);
   useEffect(() => {
+    if (!skippedFirstSave.current) {
+      skippedFirstSave.current = true;
+      return;
+    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {

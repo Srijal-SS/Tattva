@@ -203,3 +203,34 @@ export const AVATARS = [
 ] as const;
 
 export type AvatarId = (typeof AVATARS)[number]["id"];
+
+// --- Scenarios (decision-first lessons; see FEATURES.md) ---
+
+/** Who a choice touches, and how. Consequences, never verdicts. */
+export interface Ripple {
+  who: string;
+  effect: string;
+}
+
+export interface ScenarioChoice {
+  id: string;
+  text: string;
+  outcome: string;
+  ripples: Ripple[];
+}
+
+export interface Perspective {
+  who: string;
+  view: string;
+}
+
+export interface Scenario {
+  lessonId: string;
+  setting: string;
+  setup: string[];
+  prompt: string;
+  choices: ScenarioChoice[];
+  perspectives: Perspective[];
+  principle: { title: string; body: string };
+  reflection: string;
+}
