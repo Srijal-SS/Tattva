@@ -17,6 +17,7 @@ const menu: { theme: string; ids: string[] }[] = [
   { theme: "Civic Sense", ids: ["lesson-1", "lesson-2", "lesson-6"] },
   { theme: "Values", ids: ["lesson-7", "lesson-9", "lesson-10"] },
   { theme: "Life Skills", ids: ["lesson-8", "lesson-5", "lesson-3"] },
+  { theme: "Culture", ids: ["lesson-11", "lesson-12"] },
 ];
 
 const facts = [
@@ -175,24 +176,13 @@ export default function LandingPage() {
                     </ul>
                   </div>
                 ))}
-                <div className="mt-11">
-                  <h3 className="font-sans text-xl font-bold">Culture</h3>
-                  <p className="mt-3 flex items-baseline gap-3">
-                    <span className="text-[19px] font-semibold">Festivals, stories and places</span>
-                    <span aria-hidden className="min-w-6 flex-1 border-b-4 border-dotted border-line" />
-                    <span className="whitespace-nowrap text-[15px] font-semibold text-text-secondary">in the works</span>
-                  </p>
-                  <p className="mt-0.5 max-w-[40ch] text-base text-text-secondary">
-                    Every claim labelled as fact, interpretation, tradition or belief, with its region and its source.
-                  </p>
-                </div>
               </div>
             </Rise>
 
             <div className="flex flex-col gap-12 px-3 sm:px-0 lg:col-span-5 lg:col-start-8 lg:pt-24">
               <Rise delay={0.1}>
                 <p className="font-display text-[clamp(1.5rem,2.2vw,2rem)] leading-snug">
-                  Culture is the theme we&apos;re building most slowly, on purpose.
+                  Culture is the theme we build most slowly, on purpose.
                 </p>
                 <p className="mt-4 text-lg leading-relaxed text-chakra-ink">
                   India is too varied for one version of it. A tradition from one region shouldn&apos;t be taught as

@@ -73,7 +73,7 @@ export default function ProfilePage() {
             })}
           </ul>
         ) : (
-          <p className="mt-3 text-text-secondary">None yet. Finish all the lessons in a theme to earn its badge.</p>
+          <p className="mt-3 text-text-secondary">None yet. Finish two lessons in a theme to earn its badge.</p>
         )}
         <Link href="/progress" className="mt-4 inline-block font-semibold text-primary underline underline-offset-4">
           See all badges

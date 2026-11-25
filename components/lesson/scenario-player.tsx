@@ -272,6 +272,29 @@ export function ScenarioPlayer({ scenario, fullNote, onFinish }: Props) {
               </h2>
               <p className="mt-4 text-lg leading-relaxed max-w-[60ch]">{scenario.principle.body}</p>
             </div>
+            {scenario.claims && (
+              <ul className="mt-6 space-y-3" aria-label="What we know, and how we know it">
+                {scenario.claims.map((c) => (
+                  <li key={c.text} className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
+                    <span className="w-32 shrink-0 text-sm font-bold capitalize text-primary-dark">{c.kind}</span>
+                    <span className="text-lg leading-relaxed">{c.text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {scenario.sources && (
+              <p className="mt-6 text-sm text-text-secondary">
+                Sources:{" "}
+                {scenario.sources.map((src, i) => (
+                  <span key={src.url}>
+                    {i > 0 && " · "}
+                    <a href={src.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">
+                      {src.name}
+                    </a>
+                  </span>
+                ))}
+              </p>
+            )}
             <button
               type="button"
               onClick={() => setShowNote((v) => !v)}

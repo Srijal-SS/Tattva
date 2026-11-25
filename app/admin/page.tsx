@@ -4,19 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BookOpen,
   Plus,
   CheckCircle2,
-  Clock,
   Eye,
   Search,
-  Filter,
-  Check,
   X,
-  Sparkles,
-  TrendingUp,
-  Users,
-  Award,
 } from "lucide-react";
 import { lessons as initialLessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
@@ -59,9 +51,11 @@ export default function AdminPage() {
   const handleCreateLesson = (e: React.FormEvent) => {
     e.preventDefault();
     sounds.playCelebration();
+    const lessonId = `lesson-${e.timeStamp.toFixed(0)}-${lessonList.length + 1}`;
+    const questionId = `q-${lessonId}`;
 
     const createdLesson: Lesson = {
-      id: `lesson-${Date.now()}`,
+      id: lessonId,
       categoryId: newCategory,
       title: newTitle.trim(),
       slug: newTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
@@ -78,22 +72,22 @@ export default function AdminPage() {
       questions: newQuestionText.trim()
         ? [
             {
-              id: `q-${Date.now()}`,
-              lessonId: `lesson-${Date.now()}`,
+              id: questionId,
+              lessonId,
               questionText: newQuestionText.trim(),
               explanation: "Great job understanding the core life skill!",
               sortOrder: 1,
               options: [
                 {
                   id: `opt-1`,
-                  questionId: `q-${Date.now()}`,
+                  questionId,
                   optionText: option1.trim() || "Correct respectful choice",
                   isCorrect: correctOptionIndex === 0,
                   sortOrder: 1,
                 },
                 {
                   id: `opt-2`,
-                  questionId: `q-${Date.now()}`,
+                  questionId,
                   optionText: option2.trim() || "Incorrect disrespectful choice",
                   isCorrect: correctOptionIndex === 1,
                   sortOrder: 2,

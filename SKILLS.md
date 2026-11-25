@@ -40,3 +40,10 @@ Every video or claim must pass:
 
 ## Changelog
 - 2026-11-25 — created.
+
+## Writing a scenario
+- Three choices, none labelled right or wrong; each outcome names who it touches (ripples).
+- Three perspectives, including someone the child wouldn't think of (the sweeper, the van worker, the stall owner).
+- Set it in a named Indian place, and vary the cities.
+- Safety lessons (lost, roads) may show real risk in outcomes, but never graphic harm.
+- Culture: every claim gets a kind and the lesson gets sources. If a claim can't be sourced, cut it.

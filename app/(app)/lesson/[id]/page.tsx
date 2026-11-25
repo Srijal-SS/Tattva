@@ -185,11 +185,8 @@ export default function LessonPage() {
       completeLesson(lessonId, score);
       setJustFinished(true);
 
-      // Check for badge
-      setTimeout(() => {
-        const newBadge = checkAndAwardBadges();
-        if (newBadge) setEarnedBadgeId(newBadge);
-      }, 500);
+      const newBadge = checkAndAwardBadges(lessonId);
+      if (newBadge) setEarnedBadgeId(newBadge);
     }
     setPhase("complete");
   };

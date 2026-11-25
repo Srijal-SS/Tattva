@@ -8,7 +8,7 @@ export const badges: Badge[] = [
     description: "Thought through 2 Values situations",
     icon: "values",
     categorySlug: "values",
-    requirement: "Complete 2 Values lessons",
+    requirement: "Finish two Values lessons",
   },
   {
     id: "badge-culture",
@@ -16,7 +16,7 @@ export const badges: Badge[] = [
     description: "Explored 2 Culture lessons",
     icon: "culture",
     categorySlug: "culture",
-    requirement: "Complete 2 Culture lessons",
+    requirement: "Finish two Culture lessons",
   },
   {
     id: "badge-civic",
@@ -24,7 +24,7 @@ export const badges: Badge[] = [
     description: "Completed 2 Civic Sense lessons",
     icon: "civic",
     categorySlug: "civic-sense",
-    requirement: "Complete 2 Civic Sense lessons",
+    requirement: "Finish two Civic Sense lessons",
   },
   {
     id: "badge-life",
@@ -32,6 +32,6 @@ export const badges: Badge[] = [
     description: "Completed 2 Life Skills lessons",
     icon: "life",
     categorySlug: "life-skills",
-    requirement: "Complete 2 Life Skills lessons",
+    requirement: "Finish two Life Skills lessons",
   },
 ];

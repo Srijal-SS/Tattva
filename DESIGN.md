@@ -72,6 +72,8 @@ Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a
 - Learn: today's situation card (scenario setup quoted) and one journey path per theme; the path fills only through stops done in order.
 - Parents: never shows the child's reflections; shows the situation, its principle and a question to ask at dinner.
 
+- Claims (culture): under the big idea, a label column (fact / interpretation / tradition / belief, primary-dark, bold) beside the claim; sources as a small linked line beneath. No coloured chips per kind: the word is the label.
+
 ## Rules learned
 - Global h1–h3 display font lives in `@layer base` so `font-sans` on a heading still wins.
 - Text on an SVG circle: set `textLength` to the circumference so the phrase meets itself.

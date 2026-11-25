@@ -233,4 +233,7 @@ export interface Scenario {
   perspectives: Perspective[];
   principle: { title: string; body: string };
   reflection: string;
+  /** Culture lessons label every claim so children can tell knowing from believing. */
+  claims?: { kind: "fact" | "interpretation" | "tradition" | "belief"; text: string }[];
+  sources?: { name: string; url: string }[];
 }

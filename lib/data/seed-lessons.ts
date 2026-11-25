@@ -19,13 +19,13 @@ export const lessons: Lesson[] = [
 
 ### Why Queues Matter
 
-🤝 **Fairness** — The person who arrived first gets served first. That's fair for everyone.
+**Fairness** — The person who arrived first gets served first. That's fair for everyone.
 
 ⏱️ **Efficiency** — Lines actually move faster than crowds! When people push, everything slows down.
 
-😊 **Respect** — Standing in a queue shows respect for other people's time and space.
+**Respect** — Standing in a queue shows respect for other people's time and space.
 
-🛡️ **Safety** — Crowded pushing can cause injuries, especially for younger children and elderly people.
+**Safety** — Crowded pushing can cause injuries, especially for younger children and elderly people.
 
 ### Real-Life Examples
 
@@ -138,11 +138,11 @@ export const lessons: Lesson[] = [
 
 ### Why It Matters
 
-🌍 **For the environment** — Trash harms animals, pollutes water, and makes our surroundings ugly.
+**For the environment** — Trash harms animals, pollutes water, and makes our surroundings ugly.
 
-🏘️ **For the community** — Clean spaces make neighborhoods happier and healthier.
+**For the community** — Clean spaces make neighborhoods happier and healthier.
 
-🧠 **For you** — Taking responsibility builds your character and makes you a role model.
+**For you** — Taking responsibility builds your character and makes you a role model.
 
 ### What You Can Do
 
@@ -220,13 +220,13 @@ export const lessons: Lesson[] = [
 
 ### Where Water Gets Wasted
 
-🚿 **Long showers** — A 10-minute shower uses about 80 liters of water!
+**Long showers** — A 10-minute shower uses about 80 liters of water!
 
-🚰 **Leaky taps** — A dripping tap can waste 20+ liters a day.
+**Leaky taps** — A dripping tap can waste 20+ liters a day.
 
-🪥 **Running taps** — Leaving the tap on while brushing wastes 6 liters per minute.
+**Running taps** — Leaving the tap on while brushing wastes 6 liters per minute.
 
-🌿 **Overwatering plants** — Plants need less water than we think.
+**Overwatering plants** — Plants need less water than we think.
 
 ### Easy Ways to Save Water
 
@@ -341,21 +341,21 @@ export const lessons: Lesson[] = [
 
 ### The 3 Main Types of Waste
 
-🟢 **Wet Waste (Green bin)** — Food scraps, fruit peels, leftover food, tea leaves, garden waste
+**Wet Waste (Green bin)** — Food scraps, fruit peels, leftover food, tea leaves, garden waste
 
-🔵 **Dry Waste (Blue bin)** — Paper, cardboard, plastic bottles, metal cans, glass
+**Dry Waste (Blue bin)** — Paper, cardboard, plastic bottles, metal cans, glass
 
-🔴 **Hazardous Waste (Red bin)** — Batteries, medicines, broken glass, chemicals
+**Hazardous Waste (Red bin)** — Batteries, medicines, broken glass, chemicals
 
 ### Why Segregation Matters
 
-♻️ **Recycling** — Dry waste like paper and plastic can be recycled into new products
+**Recycling** — Dry waste like paper and plastic can be recycled into new products
 
-🌱 **Composting** — Wet waste can become compost for gardens
+**Composting** — Wet waste can become compost for gardens
 
-🛡️ **Safety** — Hazardous waste needs special handling to protect sanitation workers
+**Safety** — Hazardous waste needs special handling to protect sanitation workers
 
-🌍 **Less landfill** — When we segregate, less waste ends up in landfills
+**Less landfill** — When we segregate, less waste ends up in landfills
 
 ### What You Can Do
 
@@ -427,30 +427,25 @@ export const lessons: Lesson[] = [
     mediaType: "text",
     content: `Getting separated from your family in a crowded place can be scary. But if you know what to do, you can stay safe and get help quickly.
 
-### Step 1: Stay Calm 😌
-
+### Step 1: Stay Calm 
 Panicking makes it harder to think clearly. Take a deep breath. You will be okay.
 
-### Step 2: Stay Where You Are 📍
-
+### Step 2: Stay Where You Are 
 Don't wander around looking — that can take you further away. Your family is probably looking for you and will come back to where they last saw you.
 
-### Step 3: Look for Safe People 👮
-
+### Step 3: Look for Safe People 
 - Security guards or police officers
 - Shopkeepers or staff at a store
 - Parents with children
 - Teachers or other known adults
 
-### Step 4: Know Your Information 📝
-
+### Step 4: Know Your Information 
 It's really helpful to know:
 - Your full name
 - A parent's phone number
 - Your home address or area
 
-### Step 5: Never Go With a Stranger ⚠️
-
+### Step 5: Never Go With a Stranger 
 Even if someone offers to help you find your parents, **never leave the area with a stranger.** Ask them to call your parents instead, or wait for security.
 
 ### What Parents Can Do
@@ -561,24 +556,21 @@ Even if someone offers to help you find your parents, **never leave the area wit
     mediaType: "text",
     content: `Roads can be busy and dangerous if we're not careful. Whether you're walking, cycling, or in a car, knowing road safety rules can save lives.
 
-### As a Pedestrian 🚶
-
+### As a Pedestrian 
 - Always use zebra crossings and footpaths
 - Look **left, then right, then left again** before crossing
 - Make eye contact with drivers before crossing
 - Never run across the road
 - Be extra careful near parked vehicles
 
-### As a Cyclist 🚲
-
+### As a Cyclist 
 - Always wear a helmet
 - Ride on the left side of the road
 - Use hand signals when turning
 - Avoid riding in the dark without lights
 - Never use headphones while cycling
 
-### As a Passenger 🚗
-
+### As a Passenger 
 - Always wear your seatbelt
 - Never distract the driver
 - Don't stick hands or heads out of windows
@@ -587,10 +579,10 @@ Even if someone offers to help you find your parents, **never leave the area wit
 
 ### Important Signs to Know
 
-🔴 **Red light** — Stop completely
-🟡 **Yellow light** — Prepare to stop (not speed up!)
-🟢 **Green light** — Go, but look carefully first
-🦓 **Zebra crossing** — Pedestrians have priority
+**Red light** — Stop completely
+**Yellow light** — Prepare to stop (not speed up!)
+**Green light** — Go, but look carefully first
+**Zebra crossing** — Pedestrians have priority
 
 **Road safety isn't just about rules — it's about protecting yourself and everyone around you.**`,
     challenge:
@@ -655,19 +647,16 @@ Even if someone offers to help you find your parents, **never leave the area wit
     mediaType: "text",
     content: `The internet is an amazing place to learn, create, and connect. But everything you post online leaves a **digital footprint** — and it can stay there forever.
 
-### What is a Digital Footprint? 👣
-
+### What is a Digital Footprint? 
 Every photo you share, comment you make, and message you send creates a trail. This trail can be seen by others — sometimes even people you don't know.
 
-### What's Safe to Share ✅
-
+### What's Safe to Share 
 - Your creative work (art, writing, projects)
 - Opinions on topics you care about
 - Things that make you proud
 - Fun memories (with permission from people in the photo)
 
-### What Should Stay Private 🚫
-
+### What Should Stay Private 
 - Your home address
 - Your phone number
 - Your school name and location
@@ -792,8 +781,7 @@ If the answer to most of these is YES, it's probably okay to share!
 
 **Do you need it, or do you want it?**
 
-### What Are Needs? 🏠
-
+### What Are Needs? 
 Needs are things you **must have** to live safely and healthily:
 - Food and clean water
 - Clothing (basic, appropriate for weather)
@@ -802,8 +790,7 @@ Needs are things you **must have** to live safely and healthily:
 - Healthcare
 - Transportation to school
 
-### What Are Wants? 🎮
-
+### What Are Wants? 
 Wants are things that are **nice to have** but you can live without:
 - The latest smartphone
 - Designer clothes
@@ -899,26 +886,19 @@ People disagree because:
 - We might be feeling stressed or tired
 - We have different preferences
 
-### Healthy Ways to Handle Disagreements 💚
+### Healthy Ways to Handle Disagreements 
+#### 1. Listen First Let the other person share their side without interrupting. You might understand their point better.
 
-#### 1. Listen First 👂
-Let the other person share their side without interrupting. You might understand their point better.
-
-#### 2. Use "I" Statements 🗣️
-Instead of: "You always take my stuff!"
+#### 2. Use "I" Statements Instead of: "You always take my stuff!"
 Try: "I feel upset when my things are taken without asking."
 
-#### 3. Stay Calm 😊
-Take a deep breath. Yelling or saying mean things makes everything worse.
+#### 3. Stay Calm Take a deep breath. Yelling or saying mean things makes everything worse.
 
-#### 4. Find Common Ground 🤝
-Look for something you both agree on. Start from there.
+#### 4. Find Common Ground Look for something you both agree on. Start from there.
 
-#### 5. Know When to Walk Away 🚶
-If things get too heated, it's okay to say: "Let's talk about this later when we're both calm."
+#### 5. Know When to Walk Away If things get too heated, it's okay to say: "Let's talk about this later when we're both calm."
 
-### What NOT to Do ❌
-
+### What NOT to Do 
 - Don't call people names
 - Don't bring up old fights
 - Don't involve everyone in a personal disagreement
@@ -994,8 +974,7 @@ If things get too heated, it's okay to say: "Let's talk about this later when we
 - Someone drops their things → help them pick up
 - A new student joins school → welcome them and show around
 
-### How to Help Safely 🛡️
-
+### How to Help Safely 
 - **Always stay safe.** Don't put yourself in danger to help someone.
 - **Ask first.** "Can I help you?" shows respect.
 - **Tell a trusted adult** if someone needs serious help.
@@ -1006,7 +985,7 @@ If things get too heated, it's okay to say: "Let's talk about this later when we
 
 You don't need to do something huge to help. Small acts of kindness create a ripple effect:
 
-🌊 You help one person → they feel good → they help someone else → and so on!
+You help one person → they feel good → they help someone else → and so on!
 
 ### The Golden Rule
 
@@ -1060,5 +1039,59 @@ Treat others the way you'd want to be treated. If you were struggling, wouldn't 
         ],
       },
     ],
+  },
+
+  // ==================== CULTURE ====================
+  {
+    id: "lesson-11",
+    categoryId: "cat-culture",
+    title: "Many Languages, One Classroom",
+    slug: "many-languages-one-classroom",
+    description: "India speaks in hundreds of languages. What happens when a classmate's sounds different from yours?",
+    ageMin: 10,
+    ageMax: 14,
+    durationMinutes: 6,
+    mediaType: "text",
+    sourceName: "Constitution of India, Eighth Schedule",
+    sourceUrl: "https://www.mha.gov.in/sites/default/files/EighthSchedule_19052017.pdf",
+    content: `India's Constitution lists **22 languages** in its Eighth Schedule, and the 2011 Census counted many more spoken across the country.
+
+### Why accents happen
+Everyone learns a new language through the sounds of the one they already know. An accent isn't a mistake; it's a sign of a second (or third) language.
+
+### What you can do
+- Ask someone how to say a word in their language.
+- If you can't understand, ask them to repeat it instead of laughing.
+- Notice how many languages you already hear in a single day.`,
+    challenge: "Learn how to say \"thank you\" in a language a classmate or neighbour speaks at home, and use it with them this week.",
+    points: 10,
+    published: true,
+    sortOrder: 11,
+  },
+  {
+    id: "lesson-12",
+    categoryId: "cat-culture",
+    title: "A Festival That Isn't Yours (Yet)",
+    slug: "a-festival-that-isnt-yours",
+    description: "Your neighbour invites you to their Onam lunch. You've never been to one. What do you do?",
+    ageMin: 10,
+    ageMax: 14,
+    durationMinutes: 6,
+    mediaType: "text",
+    sourceName: "Kerala Tourism: Onam",
+    sourceUrl: "https://www.keralatourism.org/onam/",
+    content: `Onam is Kerala's best-known festival. Families make flower carpets (pookalam) and share a large vegetarian meal (sadya) on a banana leaf.
+
+### Facts, stories and beliefs
+Some things about a festival are facts (when it falls), some are traditions (what people do), and some are beliefs (the stories behind it). All three matter, and it helps to know which is which.
+
+### Being a good guest
+- Ask your host what you should know before you go.
+- Try things, and if you don't like something, leave it politely.
+- Ask about the story behind the festival; most people love telling it.`,
+    challenge: "Ask a friend or neighbour about a festival your family doesn't celebrate: what they eat, what they do and the story behind it.",
+    points: 10,
+    published: true,
+    sortOrder: 12,
   },
 ];

@@ -129,7 +129,7 @@ interface DemoContextType {
   // Badges
   earnBadge: (badgeId: string) => void;
   hasBadge: (badgeId: string) => boolean;
-  checkAndAwardBadges: () => string | null;
+  checkAndAwardBadges: (justCompletedId?: string) => string | null;
 
   // Stats
   getCompletedLessonCount: () => number;
@@ -170,6 +170,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as DemoState;
+        // Hydrating from localStorage after mount is the one sanctioned use: the server render can't see storage.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setState(parsed);
       }
     } catch {
@@ -297,7 +299,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     [state.earnedBadges]
   );
 
-  const checkAndAwardBadges = useCallback((): string | null => {
+  // justCompletedId counts as done even if its setState hasn't landed yet, so the badge unlocks on the lesson that earns it.
+  const checkAndAwardBadges = useCallback((justCompletedId?: string): string | null => {
     // Check each category for badge eligibility
     for (const badge of badges) {
       if (state.earnedBadges.some((b) => b.badgeId === badge.id)) continue;
@@ -309,7 +312,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         (l) => l.categoryId === category.id && l.published
       );
       const completedCount = categoryLessons.filter(
-        (l) => state.lessonProgress[l.id]?.completed
+        (l) => l.id === justCompletedId || state.lessonProgress[l.id]?.completed
       ).length;
 
       if (completedCount >= 2) {
