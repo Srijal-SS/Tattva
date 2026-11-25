@@ -192,7 +192,21 @@ function CountUp({ to }: { to: number }) {
 }
 
 /** A tear-off ticket: the challenge leaves the screen and goes into real life. */
-function ChallengeTicket({ text, done, onDone }: { text: string; done: boolean; onDone: () => void }) {
+export function ChallengeTicket({
+  text,
+  done,
+  onDone,
+  heading = "Your real-world challenge",
+  tag = "This week",
+  allowLater = true,
+}: {
+  text: string;
+  done: boolean;
+  onDone: () => void;
+  heading?: string;
+  tag?: string;
+  allowLater?: boolean;
+}) {
   const [accepted, setAccepted] = useState(false);
   const reduce = useReducedMotion();
   const notch = "radial-gradient(circle 11px at 0 58px, transparent 10.5px, #000 11px)";
@@ -210,8 +224,8 @@ function ChallengeTicket({ text, done, onDone }: { text: string; done: boolean; 
         }}
       >
         <div className="flex h-[58px] items-center justify-between px-6">
-          <h3 className="font-sans text-base font-extrabold text-civic">Your real-world challenge</h3>
-          <span className="text-sm text-text-secondary">This week</span>
+          <h3 className="truncate font-sans text-base font-extrabold text-civic">{heading}</h3>
+          <span className="shrink-0 text-sm text-text-secondary">{tag}</span>
         </div>
         <div className="mx-4 border-t-2 border-dashed border-border" />
         <div className="relative px-6 pb-6 pt-5">
@@ -250,7 +264,7 @@ function ChallengeTicket({ text, done, onDone }: { text: string; done: boolean; 
                   <Check className="h-4 w-4" aria-hidden />
                   I did it
                 </button>
-                {!accepted && (
+                {allowLater && !accepted && (
                   <button
                     type="button"
                     onClick={() => setAccepted(true)}

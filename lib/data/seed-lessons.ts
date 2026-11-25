@@ -205,7 +205,7 @@ export const lessons: Lesson[] = [
   // ==================== ENVIRONMENT ====================
   {
     id: "lesson-3",
-    categoryId: "cat-environment",
+    categoryId: "cat-life",
     title: "Save Water: Every Drop Matters",
     slug: "save-water-every-drop",
     description:
@@ -326,7 +326,7 @@ export const lessons: Lesson[] = [
   },
   {
     id: "lesson-4",
-    categoryId: "cat-environment",
+    categoryId: "cat-civic",
     title: "The Right Way to Use a Dustbin",
     slug: "right-way-to-use-dustbin",
     description:
@@ -416,7 +416,7 @@ export const lessons: Lesson[] = [
   // ==================== SAFETY ====================
   {
     id: "lesson-5",
-    categoryId: "cat-safety",
+    categoryId: "cat-life",
     title: "What Should You Do If You Get Lost?",
     slug: "what-to-do-if-lost",
     description:
@@ -550,7 +550,7 @@ Even if someone offers to help you find your parents, **never leave the area wit
   },
   {
     id: "lesson-6",
-    categoryId: "cat-safety",
+    categoryId: "cat-civic",
     title: "Being Responsible on the Road",
     slug: "responsible-on-the-road",
     description:
@@ -644,7 +644,7 @@ Even if someone offers to help you find your parents, **never leave the area wit
   // ==================== DIGITAL CITIZENSHIP ====================
   {
     id: "lesson-7",
-    categoryId: "cat-digital",
+    categoryId: "cat-values",
     title: "Think Before You Share Online",
     slug: "think-before-you-share",
     description:
@@ -779,7 +779,7 @@ If the answer to most of these is YES, it's probably okay to share!
   // ==================== FINANCIAL BASICS ====================
   {
     id: "lesson-8",
-    categoryId: "cat-money",
+    categoryId: "cat-life",
     title: "Needs vs Wants",
     slug: "needs-vs-wants",
     description:
@@ -880,7 +880,7 @@ Understanding needs vs. wants helps you:
   // ==================== SOCIAL & EMOTIONAL ====================
   {
     id: "lesson-9",
-    categoryId: "cat-social",
+    categoryId: "cat-values",
     title: "How to Handle a Disagreement",
     slug: "handling-disagreements",
     description:
@@ -975,7 +975,7 @@ If things get too heated, it's okay to say: "Let's talk about this later when we
   },
   {
     id: "lesson-10",
-    categoryId: "cat-social",
+    categoryId: "cat-values",
     title: "Helping Someone Who Needs Support",
     slug: "helping-someone-in-need",
     description:

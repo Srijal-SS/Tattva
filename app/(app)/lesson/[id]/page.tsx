@@ -20,6 +20,7 @@ import { categories } from "@/lib/data/seed-categories";
 import { scenarios } from "@/lib/data/seed-scenarios";
 import { ScenarioPlayer } from "@/components/lesson/scenario-player";
 import { LessonComplete } from "@/components/lesson/lesson-complete";
+import { ThemeIcon } from "@/components/ui/theme-icon";
 import { Question, POINTS } from "@/types";
 
 // ============================================================
@@ -284,13 +285,13 @@ export default function LessonPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
           <span
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold"
             style={{
-              backgroundColor: `${category?.color}15`,
+              backgroundColor: `${category?.color}1A`,
               color: category?.color,
             }}
           >
-            {category?.icon} {category?.name}
+            <ThemeIcon name={category?.icon} className="h-4 w-4" /> {category?.name}
           </span>
           <span className="flex items-center gap-1 text-xs text-text-tertiary">
             <Clock className="w-3 h-3" />
@@ -425,7 +426,7 @@ export default function LessonPage() {
               </div>
 
               <h2 className="text-lg sm:text-xl font-bold text-text-primary mb-6">
-                🤔 {currentQuestion.questionText}
+                {currentQuestion.questionText}
               </h2>
 
               <div className="space-y-3">
@@ -517,8 +518,8 @@ export default function LessonPage() {
                         }`}
                       >
                         {answeredCorrectly
-                          ? "🌱 That's a great choice!"
-                          : "💡 Not quite! Let's think about it."}
+                          ? "That's a great choice."
+                          : "Not quite. Think about it again."}
                       </p>
                       <p className="text-sm text-text-secondary">
                         {currentQuestion.explanation}

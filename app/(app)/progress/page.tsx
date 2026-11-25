@@ -1,189 +1,103 @@
 "use client";
 
-import { motion } from "framer-motion";
-import {
-  Trophy,
-  Flame,
-  Star,
-  BookOpen,
-  Target,
-  TrendingUp,
-} from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useDemo } from "@/lib/demo-context";
 import { categories } from "@/lib/data/seed-categories";
 import { badges } from "@/lib/data/seed-badges";
+import { ThemeIcon } from "@/components/ui/theme-icon";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 15 },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.4 },
-  }),
-};
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function ProgressPage() {
-  const {
-    state,
-    getCompletedLessonCount,
-    getCompletedChallengeCount,
-    getCategoryProgress,
-    hasBadge,
-  } = useDemo();
+  const reduce = useReducedMotion();
+  const { state, getCompletedLessonCount, getCompletedChallengeCount, getCategoryProgress, hasBadge } = useDemo();
 
-  const totalLessonsCompleted = getCompletedLessonCount();
-  const totalChallengesCompleted = getCompletedChallengeCount();
+  const figures = [
+    { n: getCompletedLessonCount(), label: "lessons finished" },
+    { n: getCompletedChallengeCount(), label: "challenges done in real life" },
+    { n: state.profile.streak, label: "days in a row" },
+    { n: state.profile.points, label: "points" },
+  ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">
-          Your Progress
-        </h1>
-        <p className="text-text-secondary mb-8">
-          Track your learning journey and achievements.
-        </p>
-      </motion.div>
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="text-4xl font-semibold">Progress</h1>
+      <p className="mt-2 max-w-[56ch] text-lg text-text-secondary">
+        What you&apos;ve thought through so far. Not a race: there&apos;s no one to beat here.
+      </p>
 
-      {/* ==================== STATS ==================== */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-        custom={1}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
-      >
-        <div className="bg-white rounded-2xl p-5 border border-border text-center">
-          <Star className="w-6 h-6 text-accent-yellow-dark mx-auto mb-2" />
-          <p className="text-2xl font-bold text-text-primary">
-            {state.profile.points}
-          </p>
-          <p className="text-xs text-text-tertiary font-medium mt-1">
-            Tattva Points
-          </p>
-        </div>
-        <div className="bg-white rounded-2xl p-5 border border-border text-center">
-          <BookOpen className="w-6 h-6 text-primary mx-auto mb-2" />
-          <p className="text-2xl font-bold text-text-primary">
-            {totalLessonsCompleted}
-          </p>
-          <p className="text-xs text-text-tertiary font-medium mt-1">
-            Lessons Done
-          </p>
-        </div>
-        <div className="bg-white rounded-2xl p-5 border border-border text-center">
-          <Target className="w-6 h-6 text-accent-green mx-auto mb-2" />
-          <p className="text-2xl font-bold text-text-primary">
-            {totalChallengesCompleted}
-          </p>
-          <p className="text-xs text-text-tertiary font-medium mt-1">
-            Challenges
-          </p>
-        </div>
-        <div className="bg-white rounded-2xl p-5 border border-border text-center">
-          <Flame className="w-6 h-6 text-accent-orange mx-auto mb-2" />
-          <p className="text-2xl font-bold text-text-primary">
-            {state.profile.streak}
-          </p>
-          <p className="text-xs text-text-tertiary font-medium mt-1">
-            Day Streak 🔥
-          </p>
-        </div>
-      </motion.div>
+      <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 rounded-3xl bg-surface p-6 sm:grid-cols-4 sm:p-8">
+        {figures.map((f) => (
+          <div key={f.label}>
+            <dt className="sr-only">{f.label}</dt>
+            <dd>
+              <span className="block font-display text-5xl font-light tabular-nums">{f.n}</span>
+              <span className="mt-1 block text-text-secondary">{f.label}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
 
-      {/* ==================== CATEGORY PROGRESS ==================== */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-        custom={2}
-        className="bg-white rounded-2xl p-5 sm:p-6 border border-border mb-8"
-      >
-        <h2 className="text-lg font-bold text-text-primary mb-5 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          Category Progress
+      <section aria-labelledby="themes-heading" className="mt-14">
+        <h2 id="themes-heading" className="text-2xl font-semibold">
+          By theme
         </h2>
-        <div className="space-y-4">
-          {categories.map((cat) => {
-            const progress = getCategoryProgress(cat.slug);
+        <ul className="mt-6 space-y-5">
+          {categories.map((c, i) => {
+            const p = getCategoryProgress(c.slug);
             return (
-              <div key={cat.id}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-sm font-medium text-text-primary flex items-center gap-2">
-                    <span>{cat.icon}</span>
-                    {cat.name}
-                  </span>
-                  <span className="text-xs text-text-tertiary font-medium">
-                    {progress.completed}/{progress.total} ({progress.percentage}%)
+              <li key={c.id} className="grid grid-cols-[2.5rem_1fr] items-center gap-x-4">
+                <span className="row-span-2 flex h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: `${c.color}1A`, color: c.color }}>
+                  <ThemeIcon name={c.icon} className="h-5 w-5" />
+                </span>
+                <div className="flex items-baseline justify-between">
+                  <span className="font-bold">{c.name}</span>
+                  <span className="text-sm text-text-secondary">
+                    {p.total ? `${p.completed} of ${p.total}` : "coming soon"}
                   </span>
                 </div>
-                <div className="w-full h-3 bg-surface-tertiary rounded-full overflow-hidden">
+                <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-paper-deep">
                   <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress.percentage}%` }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: cat.color }}
+                    className="h-full origin-left rounded-full"
+                    style={{ backgroundColor: c.color }}
+                    initial={{ scaleX: reduce ? p.percentage / 100 : 0 }}
+                    animate={{ scaleX: p.percentage / 100 }}
+                    transition={{ duration: 0.8, ease: EASE, delay: 0.1 + i * 0.08 }}
                   />
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
-      </motion.div>
+        </ul>
+      </section>
 
-      {/* ==================== BADGES ==================== */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-        custom={3}
-      >
-        <h2 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-accent-yellow-dark" />
-          Badge Collection
+      <section aria-labelledby="badges-heading" className="mt-14">
+        <h2 id="badges-heading" className="text-2xl font-semibold">
+          Badges
         </h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {badges.map((badge) => {
-            const earned = hasBadge(badge.id);
+        <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
+          {badges.map((b) => {
+            const earned = hasBadge(b.id);
+            const c = categories.find((x) => x.slug === b.categorySlug);
             return (
-              <div
-                key={badge.id}
-                className={`rounded-2xl p-5 border text-center transition-all ${
-                  earned
-                    ? "bg-white border-accent-yellow/30 shadow-card"
-                    : "bg-surface-tertiary border-border opacity-50"
-                }`}
-              >
-                <div
-                  className={`text-3xl mb-2 ${earned ? "" : "grayscale opacity-40"}`}
+              <li key={b.id} className="flex flex-col items-center text-center">
+                <span
+                  className="flex h-24 w-24 items-center justify-center rounded-full border-[3px]"
+                  style={
+                    earned
+                      ? { backgroundColor: c?.color, borderColor: c?.color, color: "var(--color-paper)" }
+                      : { borderColor: "var(--color-line)", borderStyle: "dashed", color: "var(--color-text-tertiary)" }
+                  }
                 >
-                  {badge.icon}
-                </div>
-                <h3
-                  className={`text-sm font-bold mb-1 ${
-                    earned ? "text-text-primary" : "text-text-tertiary"
-                  }`}
-                >
-                  {badge.name}
-                </h3>
-                <p className="text-xs text-text-tertiary">{badge.description}</p>
-                {earned && (
-                  <span className="inline-block mt-2 text-xs text-accent-green font-semibold">
-                    ✓ Earned
-                  </span>
-                )}
-                {!earned && (
-                  <span className="inline-block mt-2 text-xs text-text-tertiary">
-                    🔒 Locked
-                  </span>
-                )}
-              </div>
+                  <ThemeIcon name={b.icon} className="h-10 w-10" strokeWidth={1.5} />
+                </span>
+                <span className="mt-3 font-bold">{b.name}</span>
+                <span className="mt-0.5 text-sm text-text-secondary">{earned ? b.description : b.requirement}</span>
+              </li>
             );
           })}
-        </div>
-      </motion.div>
+        </ul>
+      </section>
     </div>
   );
 }

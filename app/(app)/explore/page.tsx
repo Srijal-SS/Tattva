@@ -1,200 +1,120 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { Clock, CheckCircle2, BookOpen, ChevronRight } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
 import { lessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 15 },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.05, duration: 0.4 },
-  }),
-};
+import { scenarios } from "@/lib/data/seed-scenarios";
+import { ThemeIcon } from "@/components/ui/theme-icon";
+import { cn } from "@/lib/utils";
 
 function ExploreContent() {
-  const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") ?? "all";
-  const [activeFilter, setActiveFilter] = useState(initialCategory);
-  const { isLessonCompleted, getCategoryProgress } = useDemo();
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isLessonCompleted } = useDemo();
 
-  const filteredLessons = useMemo(() => {
-    const published = lessons.filter((l) => l.published);
-    if (activeFilter === "all") return published;
-    const category = categories.find((c) => c.slug === activeFilter);
-    if (!category) return published;
-    return published.filter((l) => l.categoryId === category.id);
-  }, [activeFilter]);
+  // The URL is the single source of truth for the filter, so links like ?category=values work and stay in sync.
+  const active = categories.some((c) => c.slug === params.get("category")) ? params.get("category")! : "all";
+  const theme = categories.find((c) => c.slug === active);
+  const setFilter = (slug: string) =>
+    router.replace(slug === "all" ? pathname : `${pathname}?category=${slug}`, { scroll: false });
 
-  const filters = [
-    { slug: "all", label: "All", icon: "📚" },
-    ...categories.map((c) => ({ slug: c.slug, label: c.name, icon: c.icon })),
-  ];
+  const list = lessons.filter((l) => l.published && (!theme || l.categoryId === theme.id));
+  const doneInTheme = list.filter((l) => isLessonCompleted(l.id)).length;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">
-          Explore Skills
-        </h1>
-        <p className="text-text-secondary mb-6">
-          Browse lessons across all categories and start learning.
-        </p>
-      </motion.div>
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="text-4xl font-semibold">Explore</h1>
+      <p className="mt-2 max-w-[56ch] text-lg text-text-secondary">
+        Every situation so far, across the four themes. Pick any one; there&apos;s no fixed order.
+      </p>
 
-      {/* ==================== CATEGORY CARDS ==================== */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-        custom={1}
-        className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8"
-      >
-        {categories.map((cat) => {
-          const progress = getCategoryProgress(cat.slug);
+      <div role="group" aria-label="Filter by theme" className="mt-8 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+        {[{ slug: "all", name: "All", icon: undefined as string | undefined, color: "" }, ...categories].map((c) => {
+          const on = active === c.slug;
           return (
             <button
-              key={cat.id}
-              onClick={() =>
-                setActiveFilter(activeFilter === cat.slug ? "all" : cat.slug)
-              }
-              className={`text-left rounded-2xl p-4 border transition-all duration-200 ${
-                activeFilter === cat.slug
-                  ? "border-primary bg-primary/5 shadow-card-hover"
-                  : "border-border bg-white hover:border-primary/30 hover:shadow-card"
-              }`}
+              key={c.slug}
+              type="button"
+              aria-pressed={on}
+              onClick={() => setFilter(c.slug)}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[15px] font-semibold transition-colors",
+                on ? "bg-ink text-paper" : "bg-surface text-text-secondary hover:text-ink"
+              )}
             >
-              <div className="text-2xl mb-2">{cat.icon}</div>
-              <h3 className="text-sm font-bold text-text-primary">{cat.name}</h3>
-              <p className="text-xs text-text-tertiary mt-1 line-clamp-2">
-                {cat.description}
-              </p>
-              <div className="flex items-center gap-2 mt-3">
-                <div className="flex-1 h-1.5 bg-surface-tertiary rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${progress.percentage}%`,
-                      backgroundColor: cat.color,
-                    }}
-                  />
-                </div>
-                <span className="text-[10px] text-text-tertiary font-medium">
-                  {progress.completed}/{progress.total}
-                </span>
-              </div>
+              {c.icon && <ThemeIcon name={c.icon} className="h-4 w-4" style={on ? undefined : { color: c.color }} />}
+              {c.name}
             </button>
           );
         })}
-      </motion.div>
-
-      {/* ==================== FILTER PILLS ==================== */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
-        {filters.map((f) => (
-          <button
-            key={f.slug}
-            onClick={() => setActiveFilter(f.slug)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-              activeFilter === f.slug
-                ? "bg-primary text-white shadow-sm"
-                : "bg-white border border-border text-text-secondary hover:border-primary/30"
-            }`}
-          >
-            <span className="text-sm">{f.icon}</span>
-            {f.label}
-          </button>
-        ))}
       </div>
 
-      {/* ==================== LESSON LIST ==================== */}
-      <div className="space-y-3">
-        {filteredLessons.map((lesson, i) => {
-          const cat = categories.find((c) => c.id === lesson.categoryId);
-          const completed = isLessonCompleted(lesson.id);
+      {theme && (
+        <div className="mt-8 rounded-3xl p-6 sm:p-8" style={{ backgroundColor: `${theme.color}14` }}>
+          <h2 className="flex items-center gap-2.5 text-2xl font-semibold" style={{ color: theme.color }}>
+            <ThemeIcon name={theme.icon} className="h-6 w-6" />
+            {theme.name}
+          </h2>
+          <p className="mt-2 max-w-[60ch] text-lg">{theme.description}</p>
+          {list.length > 0 && (
+            <p className="mt-3 text-sm font-semibold text-text-secondary">
+              {doneInTheme} of {list.length} done
+            </p>
+          )}
+        </div>
+      )}
 
-          return (
-            <motion.div
-              key={lesson.id}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-              custom={i + 2}
-            >
-              <Link href={`/lesson/${lesson.id}`} className="block">
-                <div
-                  className={`bg-white rounded-2xl p-4 sm:p-5 border transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 ${
-                    completed
-                      ? "border-accent-green/20"
-                      : "border-border hover:border-primary/30"
-                  }`}
+      {list.length > 0 ? (
+        <ul className="mt-8 space-y-3">
+          {list.map((l) => {
+            const c = categories.find((x) => x.id === l.categoryId);
+            const done = isLessonCompleted(l.id);
+            return (
+              <li key={l.id}>
+                <Link
+                  href={`/lesson/${l.id}`}
+                  className="group flex items-center gap-4 rounded-2xl bg-surface p-4 transition-[box-shadow,transform] hover:-translate-y-0.5 hover:shadow-card-hover sm:p-5"
                 >
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl ${
-                        completed
-                          ? "bg-accent-green-light/50"
-                          : "bg-surface-tertiary"
-                      }`}
-                    >
-                      {completed ? (
-                        <CheckCircle2 className="w-6 h-6 text-accent-green" />
-                      ) : (
-                        cat?.icon ?? "📖"
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className="text-[10px] font-semibold uppercase tracking-wider"
-                          style={{ color: cat?.color }}
-                        >
-                          {cat?.name}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-text-tertiary">
-                          <Clock className="w-3 h-3" />
-                          {lesson.durationMinutes} min
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-base font-bold text-text-primary mb-1">
-                        {lesson.title}
-                      </h3>
-                      <p className="text-xs text-text-tertiary line-clamp-1">
-                        {lesson.description}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs text-text-tertiary flex items-center gap-1">
-                          <BookOpen className="w-3 h-3" />
-                          {lesson.questions?.length ?? 0} questions
-                        </span>
-                        <span className="text-xs text-accent-yellow-dark font-medium">
-                          +{lesson.points} pts
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-text-tertiary flex-shrink-0 mt-1" />
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {filteredLessons.length === 0 && (
-        <div className="text-center py-16">
-          <div className="text-4xl mb-4">📚</div>
-          <h3 className="text-lg font-bold text-text-primary mb-2">
-            No lessons yet
-          </h3>
-          <p className="text-text-secondary text-sm">
-            More lessons coming soon in this category!
+                  <span
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: `${c?.color}1A`, color: c?.color }}
+                  >
+                    <ThemeIcon name={c?.icon} className="h-6 w-6" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-display text-xl font-semibold leading-snug">{l.title}</span>
+                    <span className="mt-0.5 block text-text-secondary">{l.description}</span>
+                    <span className="mt-1.5 block text-sm font-semibold" style={{ color: c?.color }}>
+                      {c?.name} · {l.durationMinutes} min{scenarios[l.id] ? " · scenario" : ""}
+                    </span>
+                  </span>
+                  {done ? (
+                    <span className="flex shrink-0 items-center gap-1 text-sm font-bold text-accent-green">
+                      <CheckCircle2 className="h-5 w-5" aria-hidden /> <span className="hidden sm:inline">Done</span>
+                    </span>
+                  ) : (
+                    <ChevronRight className="h-5 w-5 shrink-0 text-text-tertiary transition-transform group-hover:translate-x-1" aria-hidden />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="mt-8 rounded-3xl bg-surface p-8">
+          <p className="font-display text-2xl font-semibold">Nothing here yet</p>
+          <p className="mt-2 max-w-[56ch] text-text-secondary">
+            Culture lessons are being written carefully, with every claim labelled and sourced. Try another theme for
+            now.
           </p>
+          <button type="button" onClick={() => setFilter("all")} className="mt-4 font-semibold text-primary underline underline-offset-4">
+            Show all lessons
+          </button>
         </div>
       )}
     </div>
@@ -203,13 +123,7 @@ function ExploreContent() {
 
 export default function ExplorePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="max-w-4xl mx-auto px-4 py-8 animate-pulse text-text-secondary">
-          Loading lessons...
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="mx-auto max-w-4xl px-4 py-12 text-text-secondary">Loading lessons…</div>}>
       <ExploreContent />
     </Suspense>
   );

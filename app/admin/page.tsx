@@ -22,6 +22,7 @@ import { lessons as initialLessons } from "@/lib/data/seed-lessons";
 import { categories } from "@/lib/data/seed-categories";
 import { Lesson } from "@/types";
 import { sounds } from "@/lib/audio";
+import { ThemeIcon } from "@/components/ui/theme-icon";
 
 export default function AdminPage() {
   const [lessonList, setLessonList] = useState<Lesson[]>(initialLessons);
@@ -237,7 +238,7 @@ export default function AdminPage() {
                   : "bg-surface-secondary text-text-secondary hover:text-text-primary"
               }`}
             >
-              {c.icon} {c.name}
+              <ThemeIcon name={c.icon} className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> {c.name}
             </button>
           ))}
         </div>
@@ -270,7 +271,7 @@ export default function AdminPage() {
                     </td>
                     <td className="px-4 py-3.5 text-text-secondary">
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-secondary border border-border text-[11px]">
-                        <span>{category?.icon}</span>
+                        <ThemeIcon name={category?.icon} className="h-3.5 w-3.5" style={{ color: category?.color }} />
                         <span>{category?.name}</span>
                       </span>
                     </td>
@@ -369,7 +370,7 @@ export default function AdminPage() {
                     >
                       {categories.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.icon} {c.name}
+                          {c.name}
                         </option>
                       ))}
                     </select>
@@ -462,7 +463,7 @@ export default function AdminPage() {
                               : "bg-surface-tertiary text-text-tertiary"
                           }`}
                         >
-                          {correctOptionIndex === 0 ? "Correct ✓" : "Set Correct"}
+                          {correctOptionIndex === 0 ? "Correct" : "Set Correct"}
                         </button>
                       </div>
                       <input
@@ -486,7 +487,7 @@ export default function AdminPage() {
                               : "bg-surface-tertiary text-text-tertiary"
                           }`}
                         >
-                          {correctOptionIndex === 1 ? "Correct ✓" : "Set Correct"}
+                          {correctOptionIndex === 1 ? "Correct" : "Set Correct"}
                         </button>
                       </div>
                       <input

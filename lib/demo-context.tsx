@@ -27,14 +27,7 @@ const DEFAULT_PROFILE: UserProfile = {
   streak: 4,
   lastActiveDate: new Date().toISOString().split("T")[0],
   onboardingComplete: true,
-  interests: [
-    "civic-sense",
-    "environment",
-    "safety",
-    "digital-life",
-    "money",
-    "social-skills",
-  ],
+  interests: ["values", "culture", "civic-sense", "life-skills"],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -104,27 +97,14 @@ const DEFAULT_BADGES: UserBadge[] = [
   {
     id: "ub-1",
     userId: "demo-user",
-    badgeId: "badge-eco",
+    badgeId: "badge-civic",
     earnedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-    badge: badges.find((b) => b.id === "badge-eco"),
-  },
-  {
-    id: "ub-2",
-    userId: "demo-user",
-    badgeId: "badge-safety",
-    earnedAt: new Date(Date.now() - 1 * 86400000).toISOString(),
-    badge: badges.find((b) => b.id === "badge-safety"),
-  },
-  {
-    id: "ub-3",
-    userId: "demo-user",
-    badgeId: "badge-social",
-    earnedAt: new Date().toISOString(),
-    badge: badges.find((b) => b.id === "badge-social"),
+    badge: badges.find((b) => b.id === "badge-civic"),
   },
 ];
 
-const STORAGE_KEY = "tattva-demo-state";
+// v2: categories were remapped to the four themes; older saved demo state is ignored.
+const STORAGE_KEY = "tattva-demo-state-v2";
 
 // ============================================================
 // Context Types

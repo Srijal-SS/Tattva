@@ -21,17 +21,17 @@ Situation → Choose → Consequence → Perspectives → Principle → (optiona
 | # | Feature | Tests assumption | Status |
 |---|---|---|---|
 | 1 | Landing page (pitch to parent and child) | Parents trust the platform | **done**: playable hero scenario, lesson menu, parent letter |
-| 2 | Onboarding (name, age, avatar, interests) | Children will engage | exists, redesign |
-| 3 | Theme remap to 4 themes | — (consistency) | todo |
+| 2 | Onboarding (name, age, avatar, interests) | Children will engage | **done**: first name, age 10–14, drawn picture, theme cards; welcome bonus given once |
+| 3 | Theme remap to 4 themes | — (consistency) | **done**: Values, Culture (no lessons yet), Civic Sense, Life Skills; storage key bumped to v2 |
 | 4 | Scenario lesson player (branching choices + consequences) | Scenario learning improves reasoning | **done** for lessons 1, 7, 8, 9; others fall back to read + quiz |
 | 5 | Perspectives strip ("how others see it") | Teaching how, not what | **done** (inside player) |
 | 6 | Curated video block with source + age note | Content can be curated responsibly | todo |
 | 7 | Culture claim labels + sources | Cultural content curated responsibly | todo |
 | 8 | Reflection prompt (free text, private) | Reasoning improves | **done** (localStorage, +5 points) |
-| 9 | Real-world challenges | Children will engage | ticket on lesson completion **done**; Challenges page still old |
-| 10 | Journey map (learn home) | Children will engage (retention) | exists as list, redesign |
-| 11 | Progress, streaks, badges (session-based) | Retention | exists, redesign |
-| 12 | Parent view: skills practised + conversation starters | Parents perceive value | exists, redesign |
+| 9 | Real-world challenges | Children will engage | **done**: ticket on completion; Challenges page groups ready / after the lesson / done |
+| 10 | Journey map (learn home) | Children will engage (retention) | **done**: today's situation + one path per theme |
+| 11 | Progress, streaks, badges (session-based) | Retention | **done**: figures, theme bars, badge collection (no leaderboard) |
+| 12 | Parent view: skills practised + conversation starters | Parents perceive value | **done**: what they thought through + a dinner question each, real-life tries, printable certificate; reflections never shown |
 | 13 | Admin: author scenarios, sources, claim labels | Feasibility | exists, extend |
 | 14 | Demo mode (localStorage) | — | exists |
 | 15 | Supabase auth + persistence | Digital delivery can scale | later |
@@ -48,3 +48,4 @@ Social feed or chat · AI tutor · live classes · every age group · a massive 
 - 2026-11-25 — scenario player + 4 scenarios (`lib/data/seed-scenarios.ts`). Admin can't author scenarios yet.
 - 2026-11-25 — completion screen: seal, points breakdown, big idea, challenge ticket, real "Up next" lesson. Fixed demo progress being wiped on reload.
 - 2026-11-25 — landing page rebuilt; lesson menu shows the four-theme grouping (seed data not remapped yet).
+- 2026-11-25 — every app screen redone in the field-journal style: shell nav, Learn, Explore, Challenges, Progress, Profile, Parents, Onboarding, Login, Signup. No emoji left in the UI. Login/signup are honest demo forms (nothing leaves the browser).

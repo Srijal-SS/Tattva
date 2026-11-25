@@ -1,25 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import {
-  Home,
-  Compass,
-  Target,
-  BarChart3,
-  Shield,
-  User,
-  Menu,
-  X,
-  Volume2,
-  VolumeX,
-  Sparkles,
-} from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BarChart3, Compass, Home, Menu, Shield, Star, Target, User, Volume2, VolumeX, X } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
-import { AVATARS } from "@/types";
 import { sounds } from "@/lib/audio";
+import { cn } from "@/lib/utils";
+import { Avatar } from "@/components/ui/avatar";
 
 const navItems = [
   { href: "/learn", label: "Home", icon: Home },
@@ -33,186 +22,110 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { state } = useDemo();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-  const toggleSound = () => {
-    const isNowEnabled = sounds.toggleMute();
-    setIsMuted(!isNowEnabled);
-  };
-
-  const avatar = AVATARS.find((a) => a.id === state.profile.avatar);
+  const points = (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-life-tint px-3 py-1.5 text-sm font-bold tabular-nums text-ink">
+      <Star className="h-4 w-4 fill-accent-yellow text-life" aria-hidden />
+      {state.profile.points}
+      <span className="sr-only">points</span>
+    </span>
+  );
 
   return (
-    <div className="min-h-screen bg-surface-secondary flex flex-col">
-      {/* ==================== DESKTOP FLOATING GLASS NAV ==================== */}
-      <div className="hidden md:block fixed top-3 sm:top-4 inset-x-0 z-50 px-6 pointer-events-none">
-        <header className="max-w-6xl mx-auto pointer-events-auto bg-[#FFF4E8]/50 backdrop-blur-2xl backdrop-saturate-150 border border-[#E5D3BF]/90 shadow-[0_8px_32px_0_rgba(249,115,22,0.06),0_2px_8px_0_rgba(0,0,0,0.04)] rounded-full px-6 h-16 flex items-center justify-between transition-all">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-xs bg-[#FFF6EC]">
-              <Image
-                src="/logo.png"
-                alt="Tattva Logo"
-                width={48}
-                height={48}
-                className="w-full h-full object-contain"
-                priority
-              />
-            </div>
-            <span className="text-xl font-extrabold text-text-primary tracking-tight">
-              Tattva
-            </span>
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-40 bg-surface">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
+          <Link href="/learn" className="flex items-center gap-2.5 font-display text-xl font-semibold">
+            <Image src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" priority />
+            Tattva
           </Link>
 
-          <nav className="flex items-center gap-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-text-secondary hover:text-primary hover:bg-primary/5"
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
+          <nav aria-label="App" className="hidden h-full items-stretch gap-1 lg:flex">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={cn(
+                  "relative flex items-center gap-2 px-3 text-[15px] font-semibold transition-colors",
+                  isActive(item.href) ? "text-ink" : "text-text-secondary hover:text-ink"
+                )}
+              >
+                <item.icon className="h-4 w-4" strokeWidth={isActive(item.href) ? 2.25 : 1.75} aria-hidden />
+                {item.label}
+                {isActive(item.href) && <span aria-hidden className="absolute inset-x-3 bottom-0 h-[3px] rounded-t bg-primary" />}
+              </Link>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {points}
             <button
-              onClick={toggleSound}
-              className="p-2 rounded-xl border border-border hover:bg-surface-secondary text-text-secondary transition-colors"
-              title={isMuted ? "Unmute sound effects" : "Mute sound effects"}
+              type="button"
+              onClick={() => setMuted(!sounds.toggleMute())}
+              aria-label={muted ? "Turn sounds on" : "Turn sounds off"}
+              className="hidden h-9 w-9 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-paper-deep hover:text-ink sm:flex"
             >
-              {isMuted ? (
-                <VolumeX className="w-4 h-4 text-accent-pink" />
-              ) : (
-                <Volume2 className="w-4 h-4 text-primary" />
-              )}
+              {muted ? <VolumeX className="h-[18px] w-[18px]" aria-hidden /> : <Volume2 className="h-[18px] w-[18px]" aria-hidden />}
             </button>
-
-            <Link
-              href="/admin"
-              className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold transition-colors flex items-center gap-1"
-            >
-              <span>CMS</span>
+            <Link href="/profile" aria-label={`Profile: ${state.profile.name}`} className="hidden lg:block">
+              <Avatar id={state.profile.avatar} className="h-9 w-9" />
             </Link>
-
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-yellow/10 rounded-full">
-              <span className="text-sm">⭐</span>
-              <span className="text-xs font-bold text-accent-yellow-dark">
-                {state.profile.points}
-              </span>
-            </div>
-
-            <Link
-              href="/profile"
-              className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-lg hover:ring-2 hover:ring-primary/30 transition-all"
-            >
-              {avatar?.emoji ?? "🧒"}
+            <Link href="/admin" className="hidden text-sm font-semibold text-text-secondary hover:text-ink xl:block">
+              Studio
             </Link>
-          </div>
-        </header>
-      </div>
-
-      {/* ==================== MOBILE FLOATING GLASS BAR ==================== */}
-      <div className="md:hidden fixed top-2.5 inset-x-0 z-50 px-3 pointer-events-none">
-        <header className="pointer-events-auto bg-[#FFF4E8]/30 backdrop-blur-2xl backdrop-saturate-150 border border-[#E5D3BF]/90 shadow-[0_4px_20px_0_rgba(249,115,22,0.04)] rounded-2xl px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs bg-[#FFF6EC]">
-              <Image
-                src="/logo.png"
-                alt="Tattva Logo"
-                width={40}
-                height={40}
-                className="w-full h-full object-contain"
-                priority
-              />
-            </div>
-            <span className="text-lg font-bold text-text-primary">Tattva</span>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-accent-yellow/10 rounded-full">
-              <span className="text-xs">⭐</span>
-              <span className="text-xs font-bold text-accent-yellow-dark">
-                {state.profile.points}
-              </span>
-            </div>
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-surface-tertiary transition-colors"
-              aria-label="Toggle menu"
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-paper-deep lg:hidden"
             >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-text-secondary" />
-              ) : (
-                <Menu className="w-5 h-5 text-text-secondary" />
-              )}
+              {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
             </button>
           </div>
-        </header>
+        </div>
 
-        {/* Mobile dropdown */}
-        {mobileMenuOpen && (
-          <div className="pointer-events-auto mt-2 bg-[#FFF4E8]/80 backdrop-blur-2xl border border-[#E5D3BF] rounded-2xl shadow-xl px-4 py-3 animate-slide-down">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-primary/10 text-primary font-bold"
-                      : "text-text-secondary hover:bg-surface-tertiary"
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
+        {menuOpen && (
+          <div className="bg-surface px-4 pb-4 shadow-elevated lg:hidden">
+            <div className="flex items-center gap-3 rounded-xl bg-paper-deep px-4 py-3">
+              <Avatar id={state.profile.avatar} className="h-10 w-10" />
+              <div>
+                <p className="font-bold">{state.profile.name}</p>
+                <p className="text-sm text-text-secondary">{state.profile.streak}-day streak</p>
+              </div>
+            </div>
+            <div className="mt-3 flex gap-4 text-sm font-semibold">
+              <button type="button" onClick={() => setMuted(!sounds.toggleMute())} className="text-text-secondary">
+                {muted ? "Turn sounds on" : "Turn sounds off"}
+              </button>
+              <Link href="/admin" onClick={() => setMenuOpen(false)} className="text-text-secondary">
+                Studio
+              </Link>
+            </div>
           </div>
         )}
-      </div>
+      </header>
 
-      {/* ==================== MAIN CONTENT ==================== */}
-      <main className="flex-1 pt-20 md:pt-24 pb-20 md:pb-8">{children}</main>
+      <main className="flex-1 pb-24 lg:pb-10">{children}</main>
 
-      {/* ==================== MOBILE BOTTOM NAV ==================== */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FFF4E8]/80 backdrop-blur-lg border-t border-[#E5D3BF]">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav aria-label="App" className="fixed inset-x-0 bottom-0 z-40 bg-surface pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_-8px_rgba(60,36,16,0.18)] lg:hidden">
+        <div className="grid grid-cols-6">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-[60px] ${
-                  isActive ? "text-primary" : "text-text-tertiary"
-                }`}
+                aria-current={active ? "page" : undefined}
+                className={cn("relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold", active ? "text-primary" : "text-text-secondary")}
               >
-                <item.icon
-                  className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : ""}`}
-                />
-                <span
-                  className={`text-[10px] font-medium ${
-                    isActive ? "font-semibold" : ""
-                  }`}
-                >
-                  {item.label}
-                </span>
-                {isActive && (
-                  <div className="absolute -top-0 w-8 h-0.5 bg-primary rounded-full" />
-                )}
+                {active && <span aria-hidden className="absolute inset-x-4 top-0 h-[3px] rounded-b bg-primary" />}
+                <item.icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
+                {item.label}
               </Link>
             );
           })}

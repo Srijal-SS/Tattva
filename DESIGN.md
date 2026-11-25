@@ -64,6 +64,14 @@ Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a
 - Pictures (`public/world/`, credited in the footer from `credits.json`): Kharghar station, Johari Bazaar postcard, diyas and rangoli, Jaipur street, samosas. These show the children's world, never Tattva's own users.
 - Known tension: the inspector flags the cream paper with sienna as an "assistant palette". It's kept because it's the committed brand, and the navy field carries most of the landing page. Revisit if it starts to read generic.
 
+## App screens (shipped)
+- Shell: solid sticky header (logo, nav from `lg`, points pill, sound, avatar); fixed bottom nav below `lg`.
+- `ThemeIcon` (`components/ui/theme-icon.tsx`): Scale / Lamp / Landmark / Sprout for the four themes, drawn in the theme colour on a `${color}1A` circle. Badges reuse the same marks.
+- `Avatar` (`components/ui/avatar.tsx`): lucide marks in a primary-100 circle, mapped from the `AVATARS` ids. The emoji in data are never rendered.
+- Page pattern: h1 + one plain sentence, then sections with h2. No stat-card grids; figures are set large in the display face inside one panel, or as a single line.
+- Learn: today's situation card (scenario setup quoted) and one journey path per theme; the path fills only through stops done in order.
+- Parents: never shows the child's reflections; shows the situation, its principle and a question to ask at dinner.
+
 ## Rules learned
 - Global h1–h3 display font lives in `@layer base` so `font-sans` on a heading still wins.
 - Text on an SVG circle: set `textLength` to the circumference so the phrase meets itself.
@@ -73,3 +81,4 @@ Idea: **the challenge ticket Tattva hands kids becomes the page.** The hero is a
 - 2026-11-25 — tokens, fonts, grain shipped; scenario player shipped. Nav and other pages still use old layouts (and emoji) under the new palette.
 - 2026-11-25 — landing page rebuilt as the ticket (0 inspector FAILs at 1440/768/390).
 - 2026-11-25 — lesson completion + challenge ticket shipped; separate "challenge accepted" screen removed.
+- 2026-11-25 — all app screens moved to the field-journal style; emoji, gradients and eyebrow pills removed from the app.

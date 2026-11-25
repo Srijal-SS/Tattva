@@ -1,320 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import {
-  Shield,
-  Heart,
-  Award,
-  Sparkles,
-  MessageCircle,
-  Clock,
-  CheckCircle2,
-  Printer,
-  ChevronRight,
-  TrendingUp,
-  ThumbsUp,
-  BookOpen,
-} from "lucide-react";
+import Link from "next/link";
+import { Check, MessageCircle, Printer } from "lucide-react";
 import { useDemo } from "@/lib/demo-context";
 import { categories } from "@/lib/data/seed-categories";
 import { lessons } from "@/lib/data/seed-lessons";
-import { sounds } from "@/lib/audio";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 15 },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.05, duration: 0.4 },
-  }),
-};
+import { scenarios } from "@/lib/data/seed-scenarios";
+import { ThemeIcon } from "@/components/ui/theme-icon";
 
 export default function ParentsPage() {
-  const { state, getCategoryProgress, getCompletedChallengeCount } = useDemo();
-  const [showCertificate, setShowCertificate] = useState(false);
-  const [approvedChallenges, setApprovedChallenges] = useState<Record<string, boolean>>({
-    "lesson-2": true,
-    "lesson-3": true,
-  });
-
+  const { state, isLessonCompleted, isChallengeCompleted, getCompletedLessonCount, getCompletedChallengeCount } = useDemo();
   const profile = state.profile;
-  const completedChallenges = getCompletedChallengeCount();
-
-  const handleApprove = (lessonId: string) => {
-    sounds.playCelebration();
-    setApprovedChallenges((prev) => ({ ...prev, [lessonId]: true }));
-  };
-
-  const handlePrintCertificate = () => {
-    sounds.playClick();
-    if (typeof window !== "undefined") {
-      window.print();
-    }
-  };
+  const published = lessons.filter((l) => l.published);
+  const finished = published.filter((l) => isLessonCompleted(l.id));
+  const tried = published.filter((l) => l.challenge && isChallengeCompleted(l.id));
+  const themeOf = (id: string) => categories.find((c) => c.id === id);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      {/* ==================== HEADER ==================== */}
-      <motion.div initial="hidden" animate="visible" variants={fadeUp} className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Parent Transparency & Insights</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
-              {profile.name}&apos;s Life Skills Dashboard
-            </h1>
-            <p className="text-sm text-text-secondary mt-1">
-              Track values learned, real-world habits practiced, and conversation starters for your family.
-            </p>
-          </div>
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="text-4xl font-semibold">For {profile.name}&apos;s parents</h1>
+      <p className="mt-3 max-w-[60ch] text-lg text-text-secondary">
+        What {profile.name} has practised, and something to ask about each one. Their written reflections stay private
+        to them: you see the situations, never their answers.
+      </p>
+      <p className="mt-4 font-semibold">
+        {getCompletedLessonCount()} lessons · {getCompletedChallengeCount()} tried in real life · {profile.streak}-day streak
+      </p>
 
-          <button
-            onClick={() => {
-              sounds.playClick();
-              setShowCertificate(!showCertificate);
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-border hover:border-primary text-text-primary text-xs font-semibold transition-all shadow-sm"
-          >
-            <Award className="w-4 h-4 text-accent-yellow-dark" />
-            <span>{showCertificate ? "Close Certificate" : "View Official Certificate"}</span>
-          </button>
+      <section aria-labelledby="practised-heading" className="mt-12">
+        <h2 id="practised-heading" className="text-2xl font-semibold">
+          What they&apos;ve thought through
+        </h2>
+        {finished.length ? (
+          <ul className="mt-5 space-y-4">
+            {finished.map((l) => {
+              const t = themeOf(l.categoryId);
+              const s = scenarios[l.id];
+              return (
+                <li key={l.id} className="rounded-3xl bg-surface p-5 sm:p-6">
+                  <p className="flex items-center gap-2 text-sm font-bold" style={{ color: t?.color }}>
+                    <ThemeIcon name={t?.icon} className="h-4 w-4" />
+                    {t?.name}
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold">{l.title}</h3>
+                  <p className="mt-1 text-text-secondary">{s ? s.principle.title : l.description}</p>
+                  <p className="mt-4 flex gap-2.5 rounded-2xl bg-paper-deep p-4">
+                    <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                    <span>
+                      <span className="font-semibold">Ask at dinner: </span>
+                      {s ? s.reflection : `What would you do differently after “${l.title}”?`}
+                    </span>
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="mt-3 text-text-secondary">
+            Nothing yet. Once {profile.name} finishes a lesson, it shows up here with a question to talk about together.
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="tried-heading" className="mt-12">
+        <h2 id="tried-heading" className="text-2xl font-semibold">
+          Tried in real life
+        </h2>
+        {tried.length ? (
+          <ul className="mt-5 space-y-3">
+            {tried.map((l) => (
+              <li key={l.id} className="flex gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-green text-text-inverse">
+                  <Check className="h-4 w-4" strokeWidth={3} aria-hidden />
+                </span>
+                <span>
+                  {l.challenge} <span className="text-text-secondary">({l.title})</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-3 text-text-secondary">
+            Each lesson ends with a small thing to try that week. When {profile.name} marks one done, it appears here.{" "}
+            <Link href="/challenges" className="font-semibold text-primary underline underline-offset-4">
+              See the challenges
+            </Link>
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="cert-heading" className="mt-14">
+        <div className="rounded-3xl border-2 border-line bg-surface p-8 text-center print:border-ink sm:p-12">
+          <Image src="/logo.png" alt="Tattva" width={56} height={56} className="mx-auto" />
+          <h2 id="cert-heading" className="mt-4 text-3xl font-semibold">
+            {profile.name}
+          </h2>
+          <p className="mx-auto mt-2 max-w-[44ch] text-lg text-text-secondary">
+            has thought through {getCompletedLessonCount()} real situations on Tattva and tried {getCompletedChallengeCount()} of them
+            out in the world.
+          </p>
+          <p className="mt-6 font-display text-xl italic">{profile.points} points</p>
         </div>
-      </motion.div>
-
-      {/* ==================== CERTIFICATE MODAL / PREVIEW ==================== */}
-      {showCertificate && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-8 p-6 sm:p-8 bg-gradient-to-br from-accent-yellow/15 via-surface to-accent-orange/10 rounded-3xl border-2 border-amber-300/80 shadow-md text-center relative overflow-hidden"
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 font-semibold text-text-inverse hover:bg-primary-dark print:hidden"
         >
-          <div className="absolute top-3 right-3">
-            <button
-              onClick={handlePrintCertificate}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors shadow-sm"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              Print Certificate
-            </button>
-          </div>
-
-          <div className="flex justify-center mb-3">
-            <div className="w-16 h-16 rounded-full overflow-hidden p-1 bg-white shadow-xs border border-amber-200">
-              <Image
-                src="/logo.png"
-                alt="Tattva Seal"
-                width={64}
-                height={64}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </div>
-          <p className="text-xs font-bold tracking-widest text-amber-800 uppercase">
-            Tattva Certificate of Life Skills
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-950 mt-1 mb-2">
-            Junior Citizen of Excellence
-          </h2>
-          <p className="text-sm text-amber-900/80 max-w-lg mx-auto">
-            This certifies that <span className="font-bold text-amber-950 underline">{profile.name}</span> has
-            demonstrated exceptional character, civic responsibility, and positive habits in everyday life.
-          </p>
-
-          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto my-6 pt-4 border-t border-amber-200">
-            <div>
-              <div className="text-xl font-bold text-amber-950">{profile.points}</div>
-              <div className="text-[11px] text-amber-800 font-medium">Points Earned</div>
-            </div>
-            <div>
-              <div className="text-xl font-bold text-amber-950">{state.earnedBadges.length}</div>
-              <div className="text-[11px] text-amber-800 font-medium">Badges Unlocked</div>
-            </div>
-            <div>
-              <div className="text-xl font-bold text-amber-950">{completedChallenges}</div>
-              <div className="text-[11px] text-amber-800 font-medium">Real-Life Deeds</div>
-            </div>
-          </div>
-
-          <p className="text-[11px] text-amber-800/70 italic">
-            &ldquo;Learning beyond the classroom • Building character for tomorrow&rdquo;
-          </p>
-        </motion.div>
-      )}
-
-      {/* ==================== SUMMARY STATS ==================== */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <div className="bg-white p-4 rounded-2xl border border-border shadow-sm">
-          <div className="flex items-center gap-2 text-xs text-text-secondary mb-1">
-            <Clock className="w-3.5 h-3.5 text-primary" />
-            <span>Screen Time Today</span>
-          </div>
-          <div className="text-xl font-bold text-text-primary">12 mins</div>
-          <div className="text-[11px] text-accent-green font-medium mt-0.5">Healthy micro-learning</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-border shadow-sm">
-          <div className="flex items-center gap-2 text-xs text-text-secondary mb-1">
-            <TrendingUp className="w-3.5 h-3.5 text-accent-green" />
-            <span>Learning Streak</span>
-          </div>
-          <div className="text-xl font-bold text-text-primary">{profile.streak} Days</div>
-          <div className="text-[11px] text-text-tertiary mt-0.5">Consistent learner</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-border shadow-sm">
-          <div className="flex items-center gap-2 text-xs text-text-secondary mb-1">
-            <Award className="w-3.5 h-3.5 text-accent-orange" />
-            <span>Real-World Actions</span>
-          </div>
-          <div className="text-xl font-bold text-text-primary">{completedChallenges} Deeds</div>
-          <div className="text-[11px] text-accent-orange font-medium mt-0.5">Applied in home & school</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-border shadow-sm">
-          <div className="flex items-center gap-2 text-xs text-text-secondary mb-1">
-            <Shield className="w-3.5 h-3.5 text-[#0EA5E9]" />
-            <span>Child Safety</span>
-          </div>
-          <div className="text-xl font-bold text-text-primary">100% Safe</div>
-          <div className="text-[11px] text-accent-green font-medium mt-0.5">No ads • No social feed</div>
-        </div>
-      </div>
-
-      {/* ==================== VALUES & CHARACTER PROGRESS ==================== */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-5 sm:p-6 rounded-3xl border border-border shadow-sm">
-          <h2 className="text-base font-bold text-text-primary mb-1 flex items-center gap-2">
-            <Heart className="w-4 h-4 text-accent-pink" />
-            <span>Character & Skill Development</span>
-          </h2>
-          <p className="text-xs text-text-secondary mb-5">
-            Progress measured by interactive understanding and real actions.
-          </p>
-
-          <div className="space-y-4">
-            {categories.map((c) => {
-              const prog = getCategoryProgress(c.slug);
-              return (
-                <div key={c.id}>
-                  <div className="flex items-center justify-between text-xs font-semibold mb-1">
-                    <span className="flex items-center gap-1.5">
-                      <span>{c.icon}</span>
-                      <span>{c.name}</span>
-                    </span>
-                    <span className="text-text-secondary">
-                      {prog.completed}/{prog.total} lessons ({prog.percentage}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-surface-tertiary h-2 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
-                      style={{ width: `${Math.max(prog.percentage, 10)}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ==================== DINNER CONVERSATION STARTERS ==================== */}
-        <div className="bg-white p-5 sm:p-6 rounded-3xl border border-border shadow-sm">
-          <h2 className="text-base font-bold text-text-primary mb-1 flex items-center gap-2">
-            <MessageCircle className="w-4 h-4 text-primary" />
-            <span>Family Dinner Conversation Starters</span>
-          </h2>
-          <p className="text-xs text-text-secondary mb-4">
-            Topics inspired directly by lessons {profile.name} studied this week:
-          </p>
-
-          <div className="space-y-3">
-            <div className="p-3.5 rounded-2xl bg-primary-50/50 border border-primary/20">
-              <span className="text-xs font-bold text-primary block mb-1">
-                🗣️ On Civic Sense & Patience
-              </span>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                &ldquo;Ask {profile.name}: Why do you think people rush instead of waiting in line? What happens when everyone cooperates?&rdquo;
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-accent-green-light/40 border border-accent-green/30">
-              <span className="text-xs font-bold text-accent-green-dark block mb-1">
-                🌱 On Waste & Water Saving
-              </span>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                &ldquo;Can you show our family one small change we can make in our kitchen today to save water or plastic?&rdquo;
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-accent-yellow-light/30 border border-accent-yellow/30">
-              <span className="text-xs font-bold text-accent-yellow-dark block mb-1">
-                💰 On Needs vs Wants
-              </span>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                &ldquo;Let&apos;s pick 3 items in our shopping cart: is this a necessity, or a nice-to-have want?&rdquo;
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ==================== PARENT VERIFICATION OF CHALLENGES ==================== */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-border shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-bold text-text-primary flex items-center gap-2">
-              <ThumbsUp className="w-4 h-4 text-accent-orange" />
-              <span>Parent Sign-off on Real-World Deeds</span>
-            </h2>
-            <p className="text-xs text-text-secondary mt-0.5">
-              Acknowledge and verify your child&apos;s positive actions in the household and school.
-            </p>
-          </div>
-        </div>
-
-        <div className="divide-y divide-border-light">
-          {lessons
-            .filter((l) => Boolean(l.challenge))
-            .slice(0, 4)
-            .map((lesson) => {
-              const isApproved = approvedChallenges[lesson.id];
-              return (
-                <div key={lesson.id} className="py-3.5 flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-text-primary mb-0.5">
-                      {lesson.challenge}
-                    </p>
-                    <p className="text-[11px] text-text-tertiary">
-                      From lesson: &quot;{lesson.title}&quot;
-                    </p>
-                  </div>
-
-                  <div>
-                    {isApproved ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent-green-light/40 text-accent-green-dark text-xs font-semibold">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Verified by Parent
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => handleApprove(lesson.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-all shadow-sm"
-                      >
-                        <ThumbsUp className="w-3.5 h-3.5" />
-                        <span>Sign Off</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      </div>
+          <Printer className="h-5 w-5" aria-hidden /> Print this certificate
+        </button>
+      </section>
     </div>
   );
 }
